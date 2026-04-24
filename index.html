@@ -1426,7 +1426,7 @@ function toast(msg, type='') {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
-  <script type="module">
+<script type="module">
   // 1. استيراد المكتبات من رابط مباشر (CDN)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
@@ -1450,6 +1450,7 @@ function toast(msg, type='') {
 
   // سطر للتأكد من أن كل شيء يعمل
   console.log("Firebase is connected successfully!");
-  alert("تم ربط الموقع بـ Firebase بنجاح!")
+  alert("تم ربط الموقع بـ Firebase بنجاح!");
+</script>
 </body>
 </html>
