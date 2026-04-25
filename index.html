@@ -59,6 +59,8 @@ a{text-decoration:none;color:inherit;}
 /* ── SCREENS ── */
 .screen{display:none;}
 .screen.active{display:block;}
+/* Fix: ensure cream background always applied, no white flash */
+body{background:var(--cream)!important;}
 
 /* ══════════════════════════════════════
    NAVBAR
@@ -613,6 +615,94 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
   .g-del{opacity:1!important;background:rgba(220,38,38,0.9)!important;}
   .del-row{color:var(--text3)!important;}
 }
+
+/* ══════════════════════════════════════
+   MOBILE CRITICAL FIXES
+══════════════════════════════════════ */
+/* Fix white background on mobile scrolling/overscroll */
+html { background: var(--dark2); }
+body { background: var(--cream); min-height: 100vh; overflow-x: hidden; }
+
+/* Fix hero full-screen on mobile */
+@media(max-width:600px) {
+  #hero { min-height: 100svh; }
+  .hero-content { padding: 0 16px; max-width: 100%; }
+  .hero-title { font-size: clamp(28px, 9vw, 50px); letter-spacing: -0.5px; }
+  .hero-sub { font-size: 13px; }
+}
+
+/* Fix dashboard hero text overflow on mobile */
+@media(max-width:600px) {
+  .dash-hero { overflow: hidden; }
+  .dash-hero-text h1 { word-break: break-word; }
+}
+
+/* Fix tables scrolling — prevent content cut-off */
+@media(max-width:600px) {
+  .d-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .rpt-table { min-width: 320px; }
+  .rpt-table th, .rpt-table td { padding: 6px 4px; font-size: 11px; }
+}
+
+/* Fix overview stats on very small screens */
+@media(max-width:360px) {
+  .stat-g { grid-template-columns: 1fr 1fr !important; }
+  .s-val { font-size: 16px; }
+}
+
+/* Fix section padding on tiny screens */
+@media(max-width:380px) {
+  section { padding: 48px 14px; }
+  .section-title { font-size: 24px; }
+  .services-grid { grid-template-columns: 1fr; }
+}
+
+/* Fix contact grid on mobile */
+@media(max-width:600px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+
+/* Fix stats bar on mobile - 2 columns */
+@media(max-width:480px) {
+  #stats { grid-template-columns: repeat(2,1fr); padding: 30px 16px; }
+  .stat-item { padding: 20px 10px; }
+}
+
+/* Fix footer links overflow */
+@media(max-width:480px) {
+  .footer-links { gap: 14px; }
+  .footer-links a { font-size: 12px; }
+}
+
+/* Fix login modal on small screens */
+@media(max-width:400px) {
+  .modal { padding: 20px 14px; border-radius: 16px; }
+}
+
+/* Fix progress bar display on mobile project cards */
+@media(max-width:600px) {
+  .proj-card { padding: 16px; }
+  .pbar { margin-top: 10px; }
+}
+
+/* Fix report screen on mobile */
+@media(max-width:600px) {
+  #reportScreen { padding-top: 60px; }
+  .report-wrap { padding: 12px 12px; }
+}
+
+/* Fix dash-hero-actions overflow and wrapping */
+@media(max-width:600px) {
+  .dash-hero { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .dash-hero-actions { margin-right: 0; width: 100%; }
+  .dash-hero-actions button { width: 100%; justify-content: center; }
+}
+
+/* Prevent horizontal scroll globally */
+* { max-width: 100%; }
+img { max-width: 100%; height: auto; }
+input, textarea, select { max-width: 100%; }
+
 </style>
 </head>
 <body>
@@ -906,7 +996,6 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
       <div class="form-g"><label>اسم المشروع</label><input id="np-name" placeholder="فيلا القاهرة الجديدة"></div>
       <div class="form-g"><label>اسم العميل</label><input id="np-client" placeholder="محمد أحمد"></div>
       <div class="form-g"><label>كود دخول العميل</label><input id="np-code" placeholder="PROJ001" style="text-transform:uppercase;"></div>
-      <div class="form-g"><label>قيمة المشروع (جنيه)</label><input id="np-value" type="number" placeholder="500000"></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('addProjModal')">إلغاء</button>
@@ -1110,7 +1199,7 @@ async function createProject() {
   const name = document.getElementById('np-name').value.trim();
   const clientName = document.getElementById('np-client').value.trim();
   const code = document.getElementById('np-code').value.trim().toUpperCase();
-  const value = Number(document.getElementById('np-value').value) || 0;
+  const value = 0;
   if(!name) { toast('أدخل اسم المشروع','error'); return; }
   try {
     await fb.addDoc(fb.collection(fb.db,'projects'), {
@@ -1118,7 +1207,7 @@ async function createProject() {
       finish: [], furn: [], gallery: []
     });
     closeModal('addProjModal');
-    ['np-name','np-client','np-code','np-value'].forEach(id => document.getElementById(id).value = '');
+    ['np-name','np-client','np-code'].forEach(id => document.getElementById(id).value = '');
     toast('✓ تم إنشاء المشروع','success');
     await showAdminDashboard();
   } catch(e) { toast('خطأ في الإنشاء','error'); console.error(e); }
@@ -1200,12 +1289,12 @@ function renderOverviewTab(body) {
     <div class="s-card"><div class="s-val">${fmt(totalCost)}</div><div class="s-lbl">إجمالي التكاليف</div></div>
     <div class="s-card"><div class="s-val" style="color:#059669">${fmt(totalPaid)}</div><div class="s-lbl">المدفوع للموردين</div></div>
     <div class="s-card"><div class="s-val" style="color:#dc2626">${fmt(totalCost-totalPaid)}</div><div class="s-lbl">مديونية الموردين</div></div>
-    <div class="s-card"><div class="s-val">${fmt(clientPaid)}</div><div class="s-lbl">المحصل من العميل</div></div>
+    <div class="s-card"><div class="s-val" style="color:#059669">${fmt(clientPaid)}</div><div class="s-lbl">المحصل من العميل</div></div>
   ` : `
-    <div class="s-card"><div class="s-val">${fmt(tv)}</div><div class="s-lbl">قيمة المشروع</div></div>
-    <div class="s-card"><div class="s-val" style="color:#059669">${fmt(clientPaid)}</div><div class="s-lbl">إجمالي الدفعات</div></div>
-    <div class="s-card"><div class="s-val" style="color:#dc2626">${fmt(Math.max(0,tv-clientPaid))}</div><div class="s-lbl">المتبقي</div></div>
+    <div class="s-card"><div class="s-val" style="color:#059669">${fmt(clientPaid)}</div><div class="s-lbl">إجمالي دفعاتي</div></div>
+    <div class="s-card"><div class="s-val">${(p.payments||[]).length}</div><div class="s-lbl">عدد الدفعات</div></div>
     <div class="s-card"><div class="s-val">${fmt(totalCost)}</div><div class="s-lbl">إجمالي تكاليف البنود</div></div>
+    <div class="s-card"><div class="s-val" style="color:var(--gold)">${p.meta?.progress||0}%</div><div class="s-lbl">نسبة الإنجاز</div></div>
   `;
 
   body.innerHTML = `
@@ -1226,6 +1315,26 @@ function renderOverviewTab(body) {
       <div class="d-card-title">ملخص الفرش</div>
       ${summaryTable(p.furn||[], isAdmin)}
     </div>
+    ${!isAdmin ? (() => {
+      const pays = p.payments || [];
+      const payRows = pays.map(x => `<tr>
+        <td style="text-align:right;padding-right:12px;">${x.date||'—'}</td>
+        <td style="color:var(--gold);font-weight:700;">${fmt(x.amount)}</td>
+        <td style="font-size:12px;color:var(--text2);">${x.note||'—'}</td>
+      </tr>`).join('');
+      return `<div class="d-card" style="border-color:rgba(201,168,76,0.25);">
+        <div class="d-card-title" style="color:#059669;">📋 سجل دفعاتي</div>
+        ${pays.length ? `
+        <div class="d-table-wrap"><table class="d-table">
+          <tr><th>التاريخ</th><th>المبلغ</th><th>ملاحظة</th></tr>
+          ${payRows}
+          <tr style="background:var(--cream2);font-weight:700;">
+            <td style="text-align:right;padding-right:12px;">الإجمالي</td>
+            <td style="color:#059669;">${fmt(clientPaid)}</td><td></td>
+          </tr>
+        </table></div>` : '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">لا توجد دفعات مسجلة بعد</div>'}
+      </div>`;
+    })() : ''}
   `;
 }
 
@@ -1491,12 +1600,12 @@ function renderPaymentsTab(body) {
           <div class="s-lbl">إجمالي الدفعات</div>
         </div>
         <div class="s-card">
-          <div class="s-val">${fmt(p.meta?.totalValue||0)}</div>
-          <div class="s-lbl">قيمة المشروع</div>
+          <div class="s-val">${fmt(p.meta?.progress||0)}%</div>
+          <div class="s-lbl">نسبة الإنجاز</div>
         </div>
-        <div class="s-card" style="background:rgba(220,38,38,0.06);">
-          <div class="s-val" style="color:#dc2626;">${fmt(Math.max(0,(p.meta?.totalValue||0)-total))}</div>
-          <div class="s-lbl">المتبقي</div>
+        <div class="s-card">
+          <div class="s-val">${payments.length}</div>
+          <div class="s-lbl">عدد الدفعات</div>
         </div>
         <div class="s-card">
           <div class="s-val">${payments.length}</div>
@@ -1555,8 +1664,8 @@ function renderInfoTab(body) {
         <div class="i-group"><label>نسبة الإنجاز %</label><input type="number" min="0" max="100" id="i-prog" value="${m.progress||0}" oninput="saveMeta('progress',this.value)"></div>
       </div>
       <div class="info-row">
-        <div class="i-group"><label>المدفوع من العميل (جنيه)</label><input type="number" id="i-paid" value="${m.clientPaid||0}" oninput="saveMeta('clientPaid',this.value)"></div>
-        <div class="i-group"><label>إجمالي قيمة المشروع (جنيه)</label><input type="number" id="i-total" value="${m.totalValue||0}" oninput="saveMeta('totalValue',this.value)"></div>
+        <div class="i-group"><label>المدفوع من العميل (جنيه)</label><input type="number" id="i-paid" value="${m.clientPaid||0}" readonly style="background:var(--cream3);color:var(--text3);" title="يُحسب تلقائياً من سجل الدفعات"></div>
+        <div class="i-group"><label>عدد الدفعات</label><input type="number" readonly value="${(currentProjectData.payments||[]).length}" style="background:var(--cream3);color:var(--text3);"></div>
       </div>
       <div class="i-group"><label>ملاحظات</label><textarea id="i-notes" oninput="saveMeta('notes',this.value)">${m.notes||''}</textarea></div>
     </div>
@@ -1568,7 +1677,7 @@ function renderInfoTab(body) {
 
 window.saveMeta = (key, val) => {
   if(!currentProjectData.meta) currentProjectData.meta = {};
-  currentProjectData.meta[key] = ['progress','clientPaid','totalValue'].includes(key) ? Number(val) : val;
+  currentProjectData.meta[key] = ['progress','clientPaid'].includes(key) ? Number(val) : val;
   if(key === 'name') document.getElementById('dashTitle').textContent = val;
   saveCurrentProject();
 };
@@ -1628,9 +1737,9 @@ function openReport(type) {
         <div class="rpt-row"><span>المحصل من العميل</span><span>${fmt(p.meta?.clientPaid||0)}</span></div>
         <div class="rpt-row"><span>الصافي</span><span style="color:${(p.meta?.clientPaid||0)-totalCost>=0?'#059669':'#dc2626'}">${fmt((p.meta?.clientPaid||0)-totalCost)}</span></div>
       ` : `
-        <div class="rpt-row"><span>قيمة المشروع</span><span>${fmt(p.meta?.totalValue||0)}</span></div>
-        <div class="rpt-row"><span>المسدد</span><span style="color:#059669">${fmt(p.meta?.clientPaid||0)}</span></div>
-        <div class="rpt-row"><span>المتبقي</span><span style="color:#dc2626">${fmt(Math.max(0,(p.meta?.totalValue||0)-(p.meta?.clientPaid||0)))}</span></div>
+        <div class="rpt-row"><span>عدد الدفعات</span><span>${(p.payments||[]).length}</span></div>
+        <div class="rpt-row"><span>إجمالي الدفعات</span><span style="color:#059669">${fmt(p.meta?.clientPaid||0)}</span></div>
+        ${(p.payments||[]).map(x=>`<div class="rpt-row" style="font-size:12px;"><span>${x.date||''} ${x.note?'— '+x.note:''}</span><span>${fmt(x.amount)}</span></div>`).join('')}
       `}
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ طباعة التقرير</button>
