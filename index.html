@@ -93,10 +93,38 @@ body{background:var(--cream)!important;}
 .nav-user-badge{background:var(--cream2);border:1px solid var(--cream3);padding:5px 14px;border-radius:20px;font-weight:700;font-size:12px;color:var(--text2);}
 .nav-logout{background:none;border:1px solid var(--cream3);color:var(--text3);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;transition:all .2s;}
 .nav-logout:hover{border-color:var(--gold-dk);color:var(--gold-dk);}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s;}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+
+/* Mobile nav drawer */
+.mobile-nav-drawer{
+  display:none;position:fixed;top:60px;left:0;right:0;z-index:899;
+  background:rgba(250,248,243,0.98);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--cream3);
+  padding:16px 20px;
+  flex-direction:column;gap:12px;
+  box-shadow:0 8px 32px rgba(14,12,9,0.1);
+}
+.mobile-nav-drawer.open{display:flex;}
+.mobile-nav-drawer a{font-size:15px;font-weight:600;color:var(--text2);padding:10px 0;border-bottom:1px solid var(--cream2);}
+.mobile-nav-drawer a:last-of-type{border-bottom:none;}
+
 @media(max-width:768px){
-  #navbar{padding:0 16px;}
+  #navbar{padding:0 16px;height:60px;}
   .nav-links{display:none;}
   .nav-logo{font-size:18px;}
+  .hamburger{display:flex;}
+  /* على الموبايل اخبي زر دخول المشاريع من الـ navbar واظهر في الدرور */
+  #navGuestActions .nav-cta{display:none;}
+}
+@media(min-width:769px){
+  .mobile-nav-drawer{display:none!important;}
+  .hamburger{display:none!important;}
 }
 
 /* ══════════════════════════════════════
@@ -309,15 +337,21 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
 .modal-overlay{
   display:none;position:fixed;inset:0;
   background:rgba(14,12,9,0.7);z-index:1000;
-  align-items:center;justify-content:center;padding:20px;
+  align-items:center;justify-content:center;padding:16px;
   backdrop-filter:blur(8px);
+  overflow-y:auto;
 }
 .modal-overlay.open{display:flex;}
 .modal{
   background:var(--white);border-radius:24px;
-  padding:40px;width:100%;max-width:440px;
+  padding:32px 28px;width:100%;max-width:440px;
   box-shadow:0 24px 80px rgba(14,12,9,0.3);
   animation:slideUp .35s cubic-bezier(.16,1,.3,1);
+  max-height:90vh;overflow-y:auto;
+}
+@media(max-width:480px){
+  .modal{padding:24px 18px;border-radius:18px;max-height:85vh;}
+  .modal-logo-text{font-size:18px;}
 }
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .modal-logo{text-align:center;margin-bottom:28px;}
@@ -620,8 +654,8 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
    MOBILE CRITICAL FIXES
 ══════════════════════════════════════ */
 /* Fix white background on mobile scrolling/overscroll */
-html { background: var(--dark2); }
-body { background: var(--cream); min-height: 100vh; overflow-x: hidden; }
+html { background: var(--cream) !important; overscroll-behavior-y: none; }
+body { background: var(--cream) !important; min-height: 100vh; overflow-x: hidden; overscroll-behavior-y: none;
 
 /* Fix hero full-screen on mobile */
 @media(max-width:600px) {
@@ -726,7 +760,17 @@ input, textarea, select { max-width: 100%; }
     </div>
     <button class="nav-logout" onclick="doLogout()">خروج</button>
   </div>
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
 </nav>
+
+<!-- Mobile Nav Drawer -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <a href="#services" onclick="closeMobileNav()">خدماتنا</a>
+  <a href="#gallery" onclick="closeMobileNav()">أعمالنا</a>
+  <a href="#whyus" onclick="closeMobileNav()">لماذا نحن</a>
+  <a href="#contact" onclick="closeMobileNav()">تواصل</a>
+  <button class="nav-cta" style="width:100%;margin-top:4px;border-radius:12px;padding:14px;" onclick="closeMobileNav();openLoginModal()">🔐 دخول المشاريع</button>
+</div>
 
 <!-- ═══════════════ PUBLIC LANDING ═══════════════ -->
 <div id="publicScreen" class="screen active">
@@ -1285,6 +1329,13 @@ function renderOverviewTab(body) {
   const clientPaid = p.meta?.clientPaid || 0;
   const tv = p.meta?.totalValue || 0;
 
+  // رصيد العميل = دفعات العميل - تكاليف البنود المكتملة والجزئية (paid > 0)
+  let activeBndsCost = 0;
+  [...(p.finish||[]), ...(p.furn||[])].forEach(x => { if((x.paid||0) > 0) activeBndsCost += x.cost||0; });
+  const clientBalance = clientPaid - activeBndsCost;
+  const balanceColor = clientBalance >= 0 ? '#059669' : '#dc2626';
+  const balanceLabel = clientBalance >= 0 ? 'رصيد دائن' : 'رصيد مدين';
+
   const statsHtml = isAdmin ? `
     <div class="s-card"><div class="s-val">${fmt(totalCost)}</div><div class="s-lbl">إجمالي التكاليف</div></div>
     <div class="s-card"><div class="s-val" style="color:#059669">${fmt(totalPaid)}</div><div class="s-lbl">المدفوع للموردين</div></div>
@@ -1297,9 +1348,26 @@ function renderOverviewTab(body) {
     <div class="s-card"><div class="s-val" style="color:var(--gold)">${p.meta?.progress||0}%</div><div class="s-lbl">نسبة الإنجاز</div></div>
   `;
 
+  // كارت رصيد العميل
+  const balanceCard = `
+    <div class="d-card" style="border-color:${clientBalance >= 0 ? 'rgba(5,150,105,0.3)' : 'rgba(220,38,38,0.3)'};background:${clientBalance >= 0 ? 'rgba(5,150,105,0.04)' : 'rgba(220,38,38,0.04)'};">
+      <div class="d-card-title" style="color:${balanceColor};">💰 رصيد العميل</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:12px;color:var(--text3);">دفعات العميل: <strong style="color:#059669">${fmt(clientPaid)}</strong></div>
+          <div style="font-size:12px;color:var(--text3);">تكاليف البنود النشطة: <strong style="color:#dc2626">${fmt(activeBndsCost)}</strong></div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:28px;font-weight:900;color:${balanceColor};">${fmt(Math.abs(clientBalance))}</div>
+          <div style="font-size:11px;font-weight:700;color:${balanceColor};letter-spacing:1px;">${balanceLabel}</div>
+        </div>
+      </div>
+    </div>`;
+
   body.innerHTML = `
     ${!isAdmin ? `<div class="client-banner"><div class="cb-icon">👋</div><div><div class="cb-title">مرحباً، ${p.meta?.clientName||''}</div><div class="cb-sub">هذا ملخص مشروعك — للتفاصيل تواصل مع المكتب</div></div></div>` : ''}
     <div class="stat-g">${statsHtml}</div>
+    ${balanceCard}
     <div class="d-card">
       <div class="d-card-title">نسبة الإنجاز</div>
       <div style="display:flex;align-items:center;gap:14px;">
@@ -1782,6 +1850,27 @@ function closeLightbox() {
 // ══════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════
+// ══ MOBILE NAV ══
+function toggleMobileNav() {
+  const drawer = document.getElementById('mobileNavDrawer');
+  const btn = document.getElementById('hamburgerBtn');
+  drawer.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeMobileNav() {
+  document.getElementById('mobileNavDrawer').classList.remove('open');
+  document.getElementById('hamburgerBtn').classList.remove('open');
+}
+// Close drawer on outside click
+document.addEventListener('click', function(e) {
+  const drawer = document.getElementById('mobileNavDrawer');
+  const btn = document.getElementById('hamburgerBtn');
+  if (drawer && btn && !drawer.contains(e.target) && !btn.contains(e.target)) {
+    drawer.classList.remove('open');
+    btn.classList.remove('open');
+  }
+});
+
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const element = document.getElementById(id);
