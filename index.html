@@ -1882,18 +1882,19 @@ function show(id) {
   window.scrollTo(0, 0);
 }
 
-function scrollSmooth(selector) {
-  if (typeof selector === "string") {
-    const el = document.querySelector(selector);
+function scrollToSection(selector) {
+  // التأكد إننا بنتعامل مع ID (لو مبعوت من غير # هنضيفها)
+  const id = typeof selector === 'string' && !selector.startsWith('#') ? '#' + selector : selector;
+  
+  if (typeof id === "string") {
+    const el = document.querySelector(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      console.error("العنصر مش موجود:", id);
     }
-  } else if (typeof selector === "number") {
-    const sections = document.querySelectorAll(".screen");
-    if (sections[selector]) {
-      sections[selector].scrollIntoView({ behavior: 'smooth' });
-    }
-  }
+  } 
+  // ... باقي الكود
 }
 
 function fmt(n) { return Math.round(n || 0).toLocaleString('ar-EG') + ' ج.م'; }
