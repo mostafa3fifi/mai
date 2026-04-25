@@ -1450,7 +1450,6 @@ window.handleDelete = async (id, btn) => {
   try {
     // استخدام window._fb (النسخة الموحدة 10.12.0)
     await window._fb.deleteDoc(window._fb.doc(window._fb.db, "projects", id));
-    
     // مسح الكارت من الصفحة
     btn.closest('.project-card')?.remove();
     toast('تم الحذف بنجاح', 'success');
