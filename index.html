@@ -1414,9 +1414,16 @@ function show(id) {
 }
 
 function scrollSmooth(selector) {
-  const el = document.querySelector(selector);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth' });
+  if (typeof selector === "string") {
+    const el = document.querySelector(selector);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  } else if (typeof selector === "number") {
+    const sections = document.querySelectorAll(".screen");
+    if (sections[selector]) {
+      sections[selector].scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
 
