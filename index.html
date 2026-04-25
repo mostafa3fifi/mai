@@ -1452,5 +1452,57 @@ function toast(msg, type='') {
   console.log("Firebase is connected successfully!");
   alert("تم ربط الموقع بـ Firebase بنجاح!");
 </script>
+<div id="project-form">
+  <input type="text" id="projectName" placeholder="اسم المشروع">
+  <input type="number" id="projectCost" placeholder="قيمة التعاقد">
+  <button id="saveBtn">حفظ المشروع</button>
+</div>
+
+<script type="module">
+  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+  
+  // دالة الحفظ
+  document.getElementById("saveBtn").onclick = async () => {
+    const name = document.getElementById("projectName").value;
+    const cost = document.getElementById("projectCost").value;
+
+    try {
+      await addDoc(collection(db, "projects"), {
+        projectName: name,
+        projectCost: cost,
+        date: new Date()
+      });
+      alert("تم حفظ بيانات المشروع في Firebase!");
+    } catch (e) {
+      alert("خطأ في الحفظ: " + e.message);
+    }
+  };
+</script>
+<div id="project-form">
+  <input type="text" id="projectName" placeholder="اسم المشروع">
+  <input type="number" id="projectCost" placeholder="قيمة التعاقد">
+  <button id="saveBtn">حفظ المشروع</button>
+</div>
+
+<script type="module">
+  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+  
+  // دالة الحفظ
+  document.getElementById("saveBtn").onclick = async () => {
+    const name = document.getElementById("projectName").value;
+    const cost = document.getElementById("projectCost").value;
+
+    try {
+      await addDoc(collection(db, "projects"), {
+        projectName: name,
+        projectCost: cost,
+        date: new Date()
+      });
+      alert("تم حفظ بيانات المشروع في Firebase!");
+    } catch (e) {
+      alert("خطأ في الحفظ: " + e.message);
+    }
+  };
+</script>
 </body>
 </html>
