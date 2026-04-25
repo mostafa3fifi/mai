@@ -6,16 +6,14 @@
 <title>مصطفى عفيفي | للتشطيبات والديكور</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 
-<!-- Firebase SDK -->
 <script type="module">
+  // 1. استيراد كل الأدوات مرة واحدة
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
- // =====================================================
-  // 🔥 FIREBASE CONFIG — تم التحديث ببيانات مشروعك
-  // =====================================================
+  // 2. الإعدادات
   const firebaseConfig = {
     apiKey: "AIzaSyDqtlM7O79lNRWHZoTnkN_UghNFSGbjaeA",
     authDomain: "mafifi-innovations.firebaseapp.com",
@@ -25,14 +23,20 @@
     appId: "1:549523788535:web:fb53351313205545def9f2"
   };
 
+  // 3. الربط مرة واحدة فقط
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-
-  // expose to window for use in regular scripts
-  window._fb = { auth, db, storage, signInWithEmailAndPassword, signOut, onAuthStateChanged, collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, orderBy, ref, uploadBytes, getDownloadURL, deleteObject };
+  window._fb = { 
+    auth: getAuth(app), 
+    db: getFirestore(app), 
+    storage: getStorage(app), 
+    signInWithEmailAndPassword, signOut, onAuthStateChanged, 
+    collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, orderBy, 
+    ref, uploadBytes, getDownloadURL, deleteObject 
+  };
+  
+  console.log("Firebase جاهز يا هندسة!");
   window.dispatchEvent(new Event('firebase-ready'));
+  
 </script>
 
 <style>
@@ -1432,21 +1436,6 @@ function toast(msg, type='') {
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
 
-  // 2. إعدادات مشروعك الخاص (Mafifi Innovations)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDqtlM7O79lNRWHZoTnkN_UghNFSGbjaeA",
-    authDomain: "mafifi-innovations.firebaseapp.com",
-    projectId: "mafifi-innovations",
-    storageBucket: "mafifi-innovations.firebasestorage.app",
-    messagingSenderId: "549523788535",
-    appId: "1:549523788535:web:fb53351313205545def9f2",
-    measurementId: "G-SHP22S45LQ"
-  };
-
-  // 3. تشغيل Firebase وربطه بالموقع
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const analytics = getAnalytics(app);
 
   // سطر للتأكد من أن كل شيء يعمل
   console.log("Firebase is connected successfully!");
