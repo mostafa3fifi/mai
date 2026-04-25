@@ -1404,21 +1404,29 @@ function closeLightbox() {
 // ══════════════════════════════════════
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
+  const element = document.getElementById(id);
+  if (element) {
+    element.classList.add('active');
+  } else {
+    console.warn("العنصر المطلوب غير موجود:", id);
+  }
+  window.scrollTo(0, 0);
 }
 
-function scrollTo(selector) {
-  document.querySelector(selector)?.scrollIntoView({behavior:'smooth'});
+function scrollSmooth(selector) {
+  const el = document.querySelector(selector);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
-function fmt(n) { return Math.round(n||0).toLocaleString('ar-EG') + ' ج.م'; }
+function fmt(n) { return Math.round(n || 0).toLocaleString('ar-EG') + ' ج.م'; }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
 
 document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
 let toastTimer;
