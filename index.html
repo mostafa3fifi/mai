@@ -1444,27 +1444,22 @@ function toast(msg, type='') {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
-</script>
+  // دالة حذف المشروع الموحدة
+window.handleDelete = async (id, btn) => {
+  if (!confirm("هل أنت متأكد؟ المشروع سيُحذف نهائياً!")) return;
+  try {
+    // استخدام window._fb (النسخة الموحدة 10.12.0)
+    await window._fb.deleteDoc(window._fb.doc(window._fb.db, "projects", id));
+    
+    // مسح الكارت من الصفحة
+    btn.closest('.project-card')?.remove();
+    toast('تم الحذف بنجاح', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('حدث خطأ أثناء الحذف', 'error');
+  }
+};
 
-<script type="module">
-  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
-  
-  // دالة الحفظ
-  document.getElementById("saveBtn").onclick = async () => {
-    const name = document.getElementById("projectName").value;
-    const cost = document.getElementById("projectCost").value;
-
-    try {
-      await addDoc(collection(db, "projects"), {
-        projectName: name,
-        projectCost: cost,
-        date: new Date()
-      });
-      alert("تم حفظ بيانات المشروع في Firebase!");
-    } catch (e) {
-      alert("خطأ في الحفظ: " + e.message);
-    }
-  };
 </script>
 </body>
 </html>
