@@ -1883,18 +1883,28 @@ function show(id) {
 }
 
 function scrollToSection(selector) {
-  // التأكد إننا بنتعامل مع ID (لو مبعوت من غير # هنضيفها)
-  const id = typeof selector === 'string' && !selector.startsWith('#') ? '#' + selector : selector;
-  
-  if (typeof id === "string") {
-    const el = document.querySelector(id);
+  // 1. تحويل القيمة لـ ID صحيح دائماً
+  let target = selector;
+  if (typeof selector === "string" && !selector.startsWith("#")) {
+    target = "#" + selector;
+  }
+
+  // 2. البحث عن العنصر
+  if (typeof target === "string") {
+    const el = document.querySelector(target);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     } else {
-      console.error("العنصر مش موجود:", id);
+      console.warn("لم يتم العثور على العنصر:", target);
     }
   } 
-  // ... باقي الكود
+  // 3. التعامل مع الأرقام (الترتيب)
+  else if (typeof selector === "number") {
+    const sections = document.querySelectorAll(".screen");
+    if (sections[selector]) {
+      sections[selector].scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 }
 
 function fmt(n) { return Math.round(n || 0).toLocaleString('ar-EG') + ' ج.م'; }
