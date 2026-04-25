@@ -1940,8 +1940,7 @@ function openReport(type) {
         <div class="rpt-row"><span>الصافي</span><span style="color:${(clientPaid)-totalCost>=0?'#059669':'#dc2626'}">${fmt((clientPaid)-totalCost)}</span></div>
       ` : `
         <div class="rpt-row"><span>إجمالي دفعات العميل</span><span style="color:#059669">${fmt(clientPaid)}</span></div>
-        <div class="rpt-row"><span>البنود المكتملة</span><span style="color:#059669">${fmt(completedCost)}</span></div>
-        <div class="rpt-row"><span>قيد التنفيذ</span><span style="color:#d97706">${fmt(inProgressCost)}</span></div>
+        <div class="rpt-row"><span>إجمالي تكاليف البنود</span><span style="color:var(--gold);font-weight:700;">${fmt(completedCost + inProgressCost)}</span></div>
         <div class="rpt-row" style="border-top:1px solid var(--cream3);padding-top:8px;"><span>إجمالي نسبة الإشراف والتنفيذ</span><span style="color:var(--gold);font-weight:900;">${fmt(totalSupervision)}</span></div>
         <div class="rpt-row"><span style="font-size:11px;color:var(--text3);">↳ تشطيبات 20%</span><span style="font-size:12px;color:var(--gold);">${fmt(finishSupervision)}</span></div>
         <div class="rpt-row"><span style="font-size:11px;color:var(--text3);">↳ فرش 10%</span><span style="font-size:12px;color:var(--gold);">${fmt(furnSupervision)}</span></div>
