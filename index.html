@@ -343,6 +343,9 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
   padding-top:72px;min-height:100vh;
   background:var(--cream);
 }
+@media(max-width:600px){
+  #dashScreen{padding-top:60px;}
+}
 .dash-hero{
   background:linear-gradient(135deg,var(--dark) 0%,var(--dark3) 100%);
   padding:48px 40px;
@@ -501,6 +504,114 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
 
 @media print{
   #navbar,.wa-fab,.proj-topbar,.dash-tabs,button:not(.print-btn){display:none!important;}
+}
+
+/* ══════════════════════════════════════
+   MOBILE FIRST — COMPREHENSIVE
+══════════════════════════════════════ */
+@media(max-width:600px){
+
+  /* ── Navbar ── */
+  #navbar{padding:0 14px;height:60px;}
+  .nav-logo{font-size:16px;}
+  .nav-cta{padding:8px 14px;font-size:12px;}
+  .nav-user-badge{padding:4px 10px;font-size:11px;}
+  .nav-logout{padding:5px 10px;font-size:11px;}
+  .nav-user-info{gap:6px;}
+
+  /* ── Hero ── */
+  .hero-sub{font-size:14px;margin-bottom:28px;}
+  .btn-primary,.btn-ghost{padding:12px 22px;font-size:14px;}
+  .hero-btns{gap:10px;}
+
+  /* ── Dashboard hero ── */
+  .dash-hero{padding:20px 14px;flex-direction:column;align-items:flex-start;gap:12px;}
+  .dash-hero-text h1{font-size:20px;}
+  .dash-hero-text .sub{font-size:12px;}
+  .dash-hero-actions{margin-right:0;width:100%;flex-direction:column;gap:8px;}
+  .dash-hero-actions button,.dash-hero-actions .btn-sm{width:100%!important;text-align:center;justify-content:center;}
+
+  /* ── Tabs ── */
+  .dash-tabs{padding:0 8px;}
+  .dt{padding:10px 10px;font-size:11px;}
+
+  /* ── Dash body ── */
+  .dash-body{padding:14px 10px;}
+
+  /* ── Project cards grid ── */
+  .projects-grid{grid-template-columns:1fr!important;gap:10px;}
+  .proj-card{padding:18px 16px;}
+  .proj-name{font-size:15px;}
+
+  /* ── Stat grid ── */
+  .stat-g{grid-template-columns:1fr 1fr!important;gap:8px;margin-bottom:14px;}
+  .s-val{font-size:18px;}
+  .s-lbl{font-size:10px;}
+  .s-card{padding:12px 8px;}
+
+  /* ── D-card ── */
+  .d-card{padding:14px 12px;}
+  .d-card-title{font-size:12px;}
+
+  /* ── Tables — make them scrollable ── */
+  .d-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -12px;padding:0 12px;}
+  .d-table{min-width:420px;font-size:11px;}
+  .d-table th{padding:8px 5px;font-size:10px;}
+  .d-table td{padding:8px 4px;font-size:11px;}
+  .d-table td input{padding:4px;font-size:11px;}
+
+  /* ── Info tab ── */
+  .info-row{grid-template-columns:1fr!important;}
+
+  /* ── Payment form ── */
+  .pay-form-grid{display:flex!important;flex-direction:column!important;gap:8px!important;}
+  .pay-form-grid .i-group{width:100%;}
+  .pay-form-btn{width:100%!important;height:40px!important;}
+
+  /* ── Report ── */
+  .report-wrap{padding:14px 10px;}
+  .rpt-table{font-size:11px;}
+  .rpt-table th,.rpt-table td{padding:7px 5px;}
+
+  /* ── Login modal ── */
+  .modal{padding:24px 20px;}
+  .modal-logo-text{font-size:18px;}
+
+  /* ── Gallery grid ── */
+  .g-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px;}
+  .g-del{opacity:1!important;}
+
+  /* ── Client banner ── */
+  .client-banner{padding:14px;gap:10px;}
+  .cb-title{font-size:14px;}
+
+  /* ── Back btn + topbar buttons ── */
+  .dashHeroActions-inner{flex-direction:column!important;width:100%;}
+  .btn-sm{font-size:11px;padding:7px 12px;}
+
+  /* ── WhatsApp FAB ── */
+  .wa-fab{bottom:16px;left:16px;width:48px;height:48px;}
+  .wa-fab svg{width:24px;height:24px;}
+
+  /* ── Toast ── */
+  .toast{font-size:12px;padding:9px 16px;bottom:76px;max-width:90vw;white-space:normal;text-align:center;}
+}
+
+/* Medium screens (tablets) */
+@media(min-width:601px) and (max-width:900px){
+  .projects-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-g{grid-template-columns:repeat(2,1fr);}
+  .dash-hero{padding:28px 24px;}
+  .dash-body{padding:20px 20px;}
+  .dash-tabs{padding:0 20px;}
+  .g-grid{grid-template-columns:repeat(3,1fr);}
+  .d-table{font-size:12px;}
+}
+
+/* Touch: make delete buttons always visible on mobile */
+@media(hover:none){
+  .g-del{opacity:1!important;background:rgba(220,38,38,0.9)!important;}
+  .del-row{color:var(--text3)!important;}
 }
 </style>
 </head>
@@ -1044,6 +1155,7 @@ function renderProjectUI(role) {
     {key:'finish', label:'🪟 التشطيبات'},
     {key:'furn', label:'🛋️ الفرش'},
     {key:'gallery', label:'📷 الصور'},
+    ...(role==='admin' ? [{key:'payments', label:'💰 دفعات العميل'}] : []),
     ...(role==='admin' ? [{key:'info', label:'📋 بيانات'}] : []),
   ];
   tabs.innerHTML = tabDefs.map(t => `<button class="dt${t.key==='overview'?' active':''}" onclick="switchTab('${t.key}')">${t.label}</button>`).join('');
@@ -1060,8 +1172,9 @@ function goBackToProjects() {
 
 function switchTab(tab) {
   currentTab = tab;
+  const tabLabel = {overview:'نظرة',finish:'التشطيبات',furn:'الفرش',gallery:'الصور',payments:'دفعات',info:'بيانات'}[tab]||'';
   document.querySelectorAll('.dt').forEach(b => {
-    b.classList.toggle('active', b.textContent.includes(tab==='overview'?'نظرة':tab==='finish'?'التشطيبات':tab==='furn'?'الفرش':tab==='gallery'?'الصور':'بيانات'));
+    b.classList.toggle('active', b.textContent.includes(tabLabel));
   });
   const body = document.getElementById('dashBody');
   body.innerHTML = '';
@@ -1069,6 +1182,7 @@ function switchTab(tab) {
   else if(tab === 'finish') renderItemsTab(body, 'finish');
   else if(tab === 'furn') renderItemsTab(body, 'furn');
   else if(tab === 'gallery') renderGalleryTab(body);
+  else if(tab === 'payments') renderPaymentsTab(body);
   else if(tab === 'info') renderInfoTab(body);
 }
 
@@ -1160,7 +1274,7 @@ function renderItemsTab(body, type) {
     }).join('');
     const profitLabel = type==='finish' ? 'ربح 20%' : 'ربح 10%';
     tableHtml = `
-      <table class="d-table"><tr><th>البند</th><th>التكلفة</th><th>المدفوع</th><th>المتبقي</th><th>${profitLabel}</th><th></th></tr>${rows||'<tr><td colspan="6" style="color:var(--text3);padding:20px;">لا توجد بنود</td></tr>'}</table>
+      <div class="d-table-wrap"><table class="d-table"><tr><th>البند</th><th>التكلفة</th><th>المدفوع</th><th>المتبقي</th><th>${profitLabel}</th><th></th></tr>${rows||'<tr><td colspan="6" style="color:var(--text3);padding:20px;">لا توجد بنود</td></tr>'}</table></div>
       <div style="background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.03));border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:14px 18px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:13px;font-weight:700;color:var(--text2);">إجمالي التكاليف: <strong style="color:var(--text)">${fmt(totalItemsCost)}</strong></span>
         <span style="font-size:13px;font-weight:700;color:var(--gold);">نسبة ربح المكتب (${type==='finish'?'20':'10'}%): <strong>${fmt(profitAmt)}</strong></span>
@@ -1297,6 +1411,136 @@ window.deleteGalleryImg = async (i) => {
 };
 
 // ── INFO TAB ──
+// ══════════════════════════════════════
+// PAYMENTS TAB
+// ══════════════════════════════════════
+function renderPaymentsTab(body) {
+  const p = currentProjectData;
+  const payments = p.payments || [];
+  const total = payments.reduce((s, x) => s + (x.amount||0), 0);
+
+  const rows = payments.map((x, i) => `
+    <tr>
+      <td style="text-align:right;padding-right:12px;">${x.date || '—'}</td>
+      <td style="color:var(--gold);font-weight:700;">${fmt(x.amount)}</td>
+      <td style="color:var(--text2);font-size:12px;">${x.note || '—'}</td>
+      <td>
+        <button class="del-row" title="حذف الدفعة" onclick="deletePayment(${i})">🗑</button>
+      </td>
+    </tr>
+  `).join('');
+
+  body.innerHTML = `
+    <div class="d-card">
+      <div class="d-card-title" style="margin-bottom:18px;">
+        <span>💰 سجل دفعات العميل</span>
+        <span style="font-size:12px;font-weight:700;color:#059669;">إجمالي: ${fmt(total)}</span>
+      </div>
+
+      <!-- Add payment form -->
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(201,168,76,0.02));border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:18px;margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">➕ إضافة دفعة جديدة</div>
+        <div class="pay-form-grid" style="display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:10px;align-items:end;">
+          <div class="i-group">
+            <label>المبلغ (جنيه)</label>
+            <input type="number" id="pay-amount" placeholder="50000" min="0" style="min-width:0;">
+          </div>
+          <div class="i-group">
+            <label>التاريخ</label>
+            <input type="date" id="pay-date" value="${new Date().toISOString().split('T')[0]}" style="min-width:0;">
+          </div>
+          <div class="i-group">
+            <label>ملاحظة</label>
+            <input type="text" id="pay-note" placeholder="دفعة أولى / مقدم ..." style="min-width:0;">
+          </div>
+          <button class="pay-form-btn" onclick="addPayment()" style="background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:#fff;border:none;border-radius:8px;padding:9px 18px;font-family:Cairo;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;height:38px;">تسجيل ✓</button>
+        </div>
+      </div>
+
+      <!-- Payments table -->
+      ${payments.length ? `
+        <div class="d-table-wrap"><table class="d-table">
+          <tr>
+            <th>التاريخ</th>
+            <th>المبلغ</th>
+            <th>ملاحظة</th>
+            <th></th>
+          </tr>
+          ${rows}
+          <tr style="background:var(--cream2);">
+            <td style="font-weight:700;text-align:right;padding-right:12px;">الإجمالي</td>
+            <td style="font-weight:900;color:#059669;">${fmt(total)}</td>
+            <td></td><td></td>
+          </tr>
+        </table></div>
+      ` : `
+        <div style="text-align:center;padding:40px;color:var(--text3);font-size:14px;">
+          <div style="font-size:36px;margin-bottom:12px;">💳</div>
+          <div>لا توجد دفعات مسجلة بعد</div>
+          <div style="font-size:12px;margin-top:6px;">أضف أول دفعة من الفورم أعلاه</div>
+        </div>
+      `}
+    </div>
+
+    <!-- summary card -->
+    <div class="d-card" style="background:linear-gradient(135deg,rgba(5,150,105,0.05),rgba(5,150,105,0.01));border-color:rgba(5,150,105,0.2);">
+      <div class="d-card-title" style="color:#059669;">ملخص مالي</div>
+      <div class="stat-g">
+        <div class="s-card" style="background:rgba(5,150,105,0.08);">
+          <div class="s-val" style="color:#059669;">${fmt(total)}</div>
+          <div class="s-lbl">إجمالي الدفعات</div>
+        </div>
+        <div class="s-card">
+          <div class="s-val">${fmt(p.meta?.totalValue||0)}</div>
+          <div class="s-lbl">قيمة المشروع</div>
+        </div>
+        <div class="s-card" style="background:rgba(220,38,38,0.06);">
+          <div class="s-val" style="color:#dc2626;">${fmt(Math.max(0,(p.meta?.totalValue||0)-total))}</div>
+          <div class="s-lbl">المتبقي</div>
+        </div>
+        <div class="s-card">
+          <div class="s-val">${payments.length}</div>
+          <div class="s-lbl">عدد الدفعات</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.addPayment = async () => {
+  const amount = Number(document.getElementById('pay-amount').value);
+  const date = document.getElementById('pay-date').value;
+  const note = document.getElementById('pay-note').value.trim();
+  if(!amount || amount <= 0) { toast('أدخل مبلغ صحيح', 'error'); return; }
+  if(!date) { toast('أدخل التاريخ', 'error'); return; }
+  if(!currentProjectData.payments) currentProjectData.payments = [];
+  // Format date to Arabic display
+  const dateObj = new Date(date);
+  const displayDate = dateObj.toLocaleDateString('ar-EG', {year:'numeric', month:'long', day:'numeric'});
+  currentProjectData.payments.push({ amount, date: displayDate, rawDate: date, note, addedAt: Date.now() });
+  // Sort by rawDate descending
+  currentProjectData.payments.sort((a,b) => new Date(b.rawDate||0) - new Date(a.rawDate||0));
+  // Auto-update clientPaid = sum of all payments
+  const total = currentProjectData.payments.reduce((s,x) => s+(x.amount||0), 0);
+  if(!currentProjectData.meta) currentProjectData.meta = {};
+  currentProjectData.meta.clientPaid = total;
+  await saveCurrentProject();
+  toast('✓ تم تسجيل الدفعة', 'success');
+  renderPaymentsTab(document.getElementById('dashBody'));
+};
+
+window.deletePayment = async (i) => {
+  if(!confirm('حذف هذه الدفعة؟')) return;
+  currentProjectData.payments.splice(i, 1);
+  // Recalculate clientPaid
+  const total = (currentProjectData.payments||[]).reduce((s,x) => s+(x.amount||0), 0);
+  if(!currentProjectData.meta) currentProjectData.meta = {};
+  currentProjectData.meta.clientPaid = total;
+  await saveCurrentProject();
+  toast('تم حذف الدفعة');
+  renderPaymentsTab(document.getElementById('dashBody'));
+};
+
 function renderInfoTab(body) {
   const m = currentProjectData.meta || {};
   body.innerHTML = `
