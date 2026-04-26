@@ -1292,7 +1292,7 @@ async function createProject() {
   try {
     await fb.addDoc(fb.collection(fb.db,'projects'), {
       meta: {name, clientName, clientCode:code, progress:0, clientPaid:0, totalValue:value, notes:'', createdAt: Date.now()},
-      finish: [], furn: [], gallery: []
+      finish: [], furn: [], gallery: [], spaces: [], height: 2.8
     });
     closeModal('addProjModal');
     ['np-name','np-client','np-code'].forEach(id => document.getElementById(id).value = '');
@@ -1323,6 +1323,7 @@ function renderProjectUI(role) {
   actions.innerHTML = `
     <button class="btn-sm btn-sm-outline" onclick="goBackToProjects()">← رجوع</button>
     <button class="btn-sm btn-sm-outline" onclick="openReport('client')">تقرير العميل</button>
+    ${role==='admin' ? `<button class="btn-sm btn-sm-outline" onclick="switchTab('spaces');setTimeout(()=>openSpacesReport(),100)">📐 مسطحات</button>` : ''}
     ${role==='admin' ? `<button class="btn-sm btn-sm-gold" onclick="openReport('office')">تقرير المكتب</button>` : ''}
   `;
   const tabs = document.getElementById('dashTabs');
@@ -1331,6 +1332,7 @@ function renderProjectUI(role) {
     {key:'overview', label:'🏠 نظرة عامة'},
     {key:'finish', label:'🪟 التشطيبات'},
     {key:'furn', label:'🛋️ الفرش'},
+    {key:'spaces', label:'📐 مسطحات'},
     {key:'gallery', label:'📷 الصور'},
     ...(role==='admin' ? [{key:'payments', label:'💰 دفعات العميل'}] : []),
     ...(role==='admin' ? [{key:'info', label:'📋 بيانات'}] : []),
@@ -1349,7 +1351,7 @@ function goBackToProjects() {
 
 function switchTab(tab) {
   currentTab = tab;
-  const tabLabel = {overview:'نظرة',finish:'التشطيبات',furn:'الفرش',gallery:'الصور',payments:'دفعات',info:'بيانات'}[tab]||'';
+  const tabLabel = {overview:'نظرة',finish:'التشطيبات',furn:'الفرش',gallery:'الصور',payments:'دفعات',info:'بيانات',spaces:'مسطحات'}[tab]||'';
   document.querySelectorAll('.dt').forEach(b => {
     b.classList.toggle('active', b.textContent.includes(tabLabel));
   });
@@ -1358,6 +1360,7 @@ function switchTab(tab) {
   if(tab === 'overview') renderOverviewTab(body);
   else if(tab === 'finish') renderItemsTab(body, 'finish');
   else if(tab === 'furn') renderItemsTab(body, 'furn');
+  else if(tab === 'spaces') renderSpacesTab(body);
   else if(tab === 'gallery') renderGalleryTab(body);
   else if(tab === 'payments') renderPaymentsTab(body);
   else if(tab === 'info') renderInfoTab(body);
@@ -1578,6 +1581,364 @@ window.addItem = async (type) => {
   currentProjectData[type] = arr;
   await saveCurrentProject();
   renderItemsTab(document.getElementById('dashBody'), type);
+};
+
+// ── SPACES TAB ──
+function renderSpacesTab(body) {
+  const p = currentProjectData;
+  const isAdmin = currentRole === 'admin';
+  const spaces = p.spaces || [];
+  const height = p.height !== undefined ? p.height : 2.8;
+
+  let totalArea = 0;
+  spaces.forEach(s => { totalArea += (s.length||0) * (s.width||0); });
+
+  const typeLabels = {room:'غرفة', bathroom:'حمام', kitchen:'مطبخ'};
+
+  let tableHtml;
+  if(isAdmin) {
+    const rows = spaces.map(s => {
+      const area = ((s.length||0) * (s.width||0)).toFixed(2);
+      return `<tr>
+        <td><input value="${s.name||''}" oninput="updSpace('${s.id}','name',this.value)" placeholder="اسم الغرفة" style="width:100%;"></td>
+        <td>
+          <select onchange="updSpace('${s.id}','type',this.value)" style="padding:6px;border:1px solid var(--cream3);border-radius:6px;font-family:Cairo;font-size:12px;background:var(--cream);color:var(--text);">
+            <option value="room" ${s.type==='room'||!s.type?'selected':''}>غرفة</option>
+            <option value="bathroom" ${s.type==='bathroom'?'selected':''}>حمام</option>
+            <option value="kitchen" ${s.type==='kitchen'?'selected':''}>مطبخ</option>
+          </select>
+        </td>
+        <td><input type="number" step="0.01" min="0" value="${s.length||''}" oninput="updSpace('${s.id}','length',this.value)" placeholder="0.00" style="width:80px;text-align:center;"></td>
+        <td><input type="number" step="0.01" min="0" value="${s.width||''}" oninput="updSpace('${s.id}','width',this.value)" placeholder="0.00" style="width:80px;text-align:center;"></td>
+        <td id="area_${s.id}" style="font-weight:700;color:var(--gold);white-space:nowrap;">${area} م²</td>
+        <td><button class="del-row" title="حذف" onclick="delSpace('${s.id}')">🗑</button></td>
+      </tr>`;
+    }).join('');
+
+    tableHtml = `
+      <div class="d-table-wrap"><table class="d-table">
+        <tr><th>اسم الغرفة / الفراغ</th><th>النوع</th><th>الطول (م)</th><th>العرض (م)</th><th>المساحة</th><th></th></tr>
+        ${rows || '<tr><td colspan="6" style="color:var(--text3);padding:24px;text-align:center;">لا توجد غرف — اضغط "إضافة غرفة"</td></tr>'}
+        ${spaces.length ? `<tr style="background:var(--cream2);font-weight:900;">
+          <td colspan="4" style="text-align:right;padding-right:16px;font-size:13px;">📐 المساحة الكلية</td>
+          <td id="totalAreaCell" style="color:var(--gold);font-size:16px;white-space:nowrap;">${totalArea.toFixed(2)} م²</td>
+          <td></td>
+        </tr>` : ''}
+      </table></div>`;
+  } else {
+    const rows = spaces.map(s => {
+      const area = ((s.length||0) * (s.width||0)).toFixed(2);
+      return `<tr>
+        <td>${s.name||'—'}</td>
+        <td>${typeLabels[s.type]||'غرفة'}</td>
+        <td>${s.length||'—'} م</td>
+        <td>${s.width||'—'} م</td>
+        <td style="font-weight:700;color:var(--gold);">${area} م²</td>
+      </tr>`;
+    }).join('');
+
+    tableHtml = `
+      <div class="d-table-wrap"><table class="d-table">
+        <tr><th>اسم الغرفة</th><th>النوع</th><th>الطول</th><th>العرض</th><th>المساحة</th></tr>
+        ${rows || '<tr><td colspan="5" style="color:var(--text3);padding:24px;text-align:center;">لا توجد مسطحات مسجلة بعد</td></tr>'}
+        ${spaces.length ? `<tr style="background:var(--cream2);font-weight:900;">
+          <td colspan="4" style="text-align:right;padding-right:16px;">📐 المساحة الكلية</td>
+          <td style="color:var(--gold);font-size:15px;">${totalArea.toFixed(2)} م²</td>
+        </tr>` : ''}
+      </table></div>`;
+  }
+
+  body.innerHTML = `
+    <div class="d-card">
+      <div class="d-card-title">
+        <span>📐 غرف وفراغات المشروع</span>
+        ${isAdmin ? `<button class="btn-sm btn-sm-outline" onclick="addSpace()">+ إضافة غرفة</button>` : ''}
+      </div>
+      ${tableHtml}
+
+      <!-- Height Section -->
+      <div style="margin-top:20px;padding:16px 20px;background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(201,168,76,0.02));border:1px solid rgba(201,168,76,0.2);border-radius:12px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">📏 ارتفاع الطابق</div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <label style="font-size:13px;color:var(--text2);white-space:nowrap;">الارتفاع الصافي (متر):</label>
+          ${isAdmin
+            ? `<input type="number" step="0.01" min="1" max="6" value="${height}" id="heightInput" oninput="saveHeight(this.value)" style="width:90px;padding:8px 12px;border:1.5px solid var(--cream3);border-radius:8px;font-family:Cairo;font-size:15px;text-align:center;font-weight:700;">`
+            : `<span style="font-size:18px;font-weight:700;color:var(--gold);">${height} م</span>`}
+          <span style="font-size:11px;color:var(--text3);">← يُستخدم في حساب سيراميك الحوايط وتقرير المسطحات</span>
+        </div>
+      </div>
+    </div>
+
+    ${spaces.length ? `
+    <div class="d-card">
+      <div class="d-card-title">🚪 جدول الفتحات (أبواب وشبابيك)</div>
+      <div id="openingsTableWrap">${renderOpeningsTable(spaces, isAdmin)}</div>
+    </div>` : ''}
+
+    ${isAdmin && spaces.length ? `
+    <div class="d-card" style="background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(201,168,76,0.01));border-color:rgba(201,168,76,0.25);">
+      <div class="d-card-title" style="color:var(--gold);">📊 تقرير المسطحات والخامات</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.8;">
+        يحسب التقرير: نقاشة · سيراميك أرضي · سيراميك حوايط الحمامات والمطبخ · خامات النقاشة والمحاره · تقدير السباكة
+      </div>
+      <div style="text-align:center;">
+        <button onclick="openSpacesReport()" style="background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:#fff;border:none;border-radius:10px;padding:13px 32px;font-family:Cairo;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(201,168,76,0.35);letter-spacing:0.5px;">
+          📋 استخراج تقرير المسطحات والخامات
+        </button>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+window.addSpace = async () => {
+  if(!currentProjectData.spaces) currentProjectData.spaces = [];
+  const newId = 'sp' + Date.now();
+  currentProjectData.spaces.push({id:newId, name:'غرفة جديدة', type:'room', length:0, width:0});
+  await saveCurrentProject();
+  renderSpacesTab(document.getElementById('dashBody'));
+};
+
+window.delSpace = async (id) => {
+  currentProjectData.spaces = (currentProjectData.spaces||[]).filter(s => s.id !== id);
+  await saveCurrentProject();
+  renderSpacesTab(document.getElementById('dashBody'));
+  toast('تم الحذف');
+};
+
+window.updSpace = (id, key, val) => {
+  const sp = (currentProjectData.spaces||[]).find(s => s.id === id);
+  if(!sp) return;
+  sp[key] = ['length','width'].includes(key) ? (parseFloat(val)||0) : val;
+  if(['length','width'].includes(key)) {
+    const areaCell = document.getElementById('area_'+id);
+    if(areaCell) areaCell.textContent = ((sp.length||0)*(sp.width||0)).toFixed(2) + ' م²';
+    let total = 0;
+    (currentProjectData.spaces||[]).forEach(s => { total += (s.length||0)*(s.width||0); });
+    const totalCell = document.getElementById('totalAreaCell');
+    if(totalCell) totalCell.textContent = total.toFixed(2) + ' م²';
+  }
+  saveCurrentProject();
+};
+
+window.saveHeight = (val) => {
+  currentProjectData.height = parseFloat(val) || 2.8;
+  saveCurrentProject();
+};
+
+window.openSpacesReport = () => {
+  const p = currentProjectData;
+  const spaces = p.spaces || [];
+  const height = p.height !== undefined ? p.height : 2.8;
+
+  let totalArea = 0;
+  spaces.forEach(s => { totalArea += (s.length||0)*(s.width||0); });
+
+  const bathrooms = spaces.filter(s => s.type === 'bathroom');
+  const kitchens  = spaces.filter(s => s.type === 'kitchen');
+
+  // ── حسابات ──
+  const paintSurface       = totalArea * 3.2;
+  const floorTilesNet      = totalArea;
+  const floorTilesSupply   = totalArea * 1.2;
+  const doorArea           = 0.9 * 2.1;   // باب قياسي 90×210 سم
+  const windowArea         = 0.7 * 0.7;   // شباك 70×70
+
+  let bathWallNet = 0;
+  bathrooms.forEach(s => {
+    const perim = 2 * ((s.length||0) + (s.width||0));
+    bathWallNet += Math.max(0, perim * height - doorArea - windowArea);
+  });
+  const bathWallSupply = bathWallNet * 1.2;
+
+  let kitchenWallNet = 0;
+  kitchens.forEach(s => {
+    const perim = 2 * ((s.length||0) + (s.width||0));
+    kitchenWallNet += Math.max(0, perim * height - doorArea - windowArea);
+  });
+  const kitchenWallSupply = kitchenWallNet * 1.2;
+
+  // خامات النقاشة
+  const puttyKg     = Math.ceil(paintSurface / 2.5);
+  const primerL     = Math.ceil(paintSurface / 10);
+  const paintL      = Math.ceil(paintSurface / 8);
+
+  // المحاره
+  const plasterBags = Math.ceil(paintSurface / 4);
+  const sandM3      = Math.ceil(paintSurface / 10);
+  const cementBags  = Math.ceil(paintSurface / 8);
+
+  // السباكة
+  const bathCount = bathrooms.length;
+
+  const fmtN = n => parseFloat(n.toFixed(2)).toLocaleString('ar-EG');
+
+  const typeLabels = {room:'غرفة', bathroom:'حمام', kitchen:'مطبخ'};
+  const logoSrc = document.querySelector('#navbar img')?.src || '';
+  const logoHtml = logoSrc ? `<img src="${logoSrc}" style="height:50px;width:auto;">` : `<div style="font-size:18px;font-weight:900;color:var(--gold);">مصطفى عفيفي</div>`;
+  const watermarkHtml = logoSrc ? `<div class="rpt-watermark"><img src="${logoSrc}"></div>` : '';
+
+  document.getElementById('reportBody').innerHTML = `
+    ${watermarkHtml}
+    <div class="rpt-header">
+      <div class="rpt-header-logo">${logoHtml}</div>
+      <div class="rpt-title">تقرير المسطحات والخامات</div>
+      <div class="rpt-sub">${p.meta?.name||''} — ${new Date().toLocaleDateString('ar-EG')}</div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;color:var(--gold);margin:16px 0 10px;">📐 جدول الغرف والفراغات</div>
+    <table class="rpt-table">
+      <tr><th>الغرفة / الفراغ</th><th>النوع</th><th>الطول × العرض (م)</th><th>المساحة (م²)</th></tr>
+      ${spaces.map(s=>`<tr>
+        <td>${s.name||'—'}</td>
+        <td>${typeLabels[s.type]||'غرفة'}</td>
+        <td style="text-align:center;">${s.length||0} × ${s.width||0}</td>
+        <td style="color:var(--gold);font-weight:700;">${fmtN((s.length||0)*(s.width||0))}</td>
+      </tr>`).join('')}
+      <tr style="background:var(--cream2);font-weight:900;">
+        <td colspan="3">📐 المساحة الكلية</td>
+        <td style="color:var(--gold);font-size:15px;">${fmtN(totalArea)}</td>
+      </tr>
+    </table>
+
+    <div style="font-size:13px;font-weight:700;color:var(--gold);margin:20px 0 10px;">📊 الكميات المحسوبة</div>
+    <table class="rpt-table">
+      <tr><th>البند</th><th>الكمية</th><th>الوحدة</th><th>ملاحظة</th></tr>
+      <tr><td>🖌️ سطح النقاشة</td><td style="color:var(--gold);font-weight:700;">${fmtN(paintSurface)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">إجمالي مساحة × 3.2</td></tr>
+      <tr><td>🟫 السيراميك الأرضي (صافي)</td><td style="color:var(--gold);font-weight:700;">${fmtN(floorTilesNet)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">إجمالي صافي المساحة</td></tr>
+      <tr><td>🟫 توريد السيراميك الأرضي</td><td style="color:var(--gold);font-weight:700;">${fmtN(floorTilesSupply)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">صافي × 1.2 (هالك 20%)</td></tr>
+      ${bathWallNet > 0 ? `
+      <tr><td>🚿 سيراميك حوايط الحمامات (${bathrooms.length} حمام) — صافي</td><td style="color:var(--gold);font-weight:700;">${fmtN(bathWallNet)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">محيط × ارتفاع − باب − شباك</td></tr>
+      <tr><td>🚿 توريد سيراميك حوايط الحمامات</td><td style="color:var(--gold);font-weight:700;">${fmtN(bathWallSupply)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">صافي × 1.2</td></tr>
+      ` : ''}
+      ${kitchenWallNet > 0 ? `
+      <tr><td>🍳 سيراميك حوايط المطبخ — صافي</td><td style="color:var(--gold);font-weight:700;">${fmtN(kitchenWallNet)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">محيط × ارتفاع − باب − شباك</td></tr>
+      <tr><td>🍳 توريد سيراميك حوايط المطبخ</td><td style="color:var(--gold);font-weight:700;">${fmtN(kitchenWallSupply)}</td><td>م²</td><td style="font-size:11px;color:var(--text3);">صافي × 1.2</td></tr>
+      ` : ''}
+    </table>
+
+    <div style="font-size:13px;font-weight:700;color:var(--gold);margin:20px 0 10px;">🖌️ خامات بند النقاشة</div>
+    <table class="rpt-table">
+      <tr><th>الخامة</th><th>الكمية التقريبية</th><th>الوحدة</th></tr>
+      <tr><td>بياض (حشو / مادة تسوية)</td><td style="color:var(--gold);font-weight:700;">${puttyKg}</td><td>كيلو</td></tr>
+      <tr><td>بريمر أساسي</td><td style="color:var(--gold);font-weight:700;">${primerL}</td><td>لتر</td></tr>
+      <tr><td>دهان نهائي (وجهين)</td><td style="color:var(--gold);font-weight:700;">${paintL}</td><td>لتر</td></tr>
+    </table>
+
+    <div style="font-size:13px;font-weight:700;color:var(--gold);margin:20px 0 10px;">🏗️ خامات المحاره والبياض</div>
+    <table class="rpt-table">
+      <tr><th>الخامة</th><th>الكمية التقريبية</th><th>الوحدة</th></tr>
+      <tr><td>رمل ناعم</td><td style="color:var(--gold);font-weight:700;">${sandM3}</td><td>م³</td></tr>
+      <tr><td>أسمنت (للبياض الخشن)</td><td style="color:var(--gold);font-weight:700;">${cementBags}</td><td>شيكارة 50 كيلو</td></tr>
+    </table>
+
+    ${bathCount > 0 ? `
+    <div style="font-size:13px;font-weight:700;color:var(--gold);margin:20px 0 10px;">🔧 تقدير أعمال السباكة (${bathCount} حمام)</div>
+    <table class="rpt-table">
+      <tr><th>البند</th><th>الكمية</th><th>الوحدة</th></tr>
+      <tr><td>طقم تأسيس حمام (خلاط + دش + مرحاض)</td><td style="color:var(--gold);font-weight:700;">${bathCount}</td><td>طقم</td></tr>
+      <tr><td>أنابيب مياه بارد وساخن (بوليبروبيلين)</td><td style="color:var(--gold);font-weight:700;">${bathCount * 10}</td><td>متر</td></tr>
+      <tr><td>أنابيب صرف PVC (4 بوصة)</td><td style="color:var(--gold);font-weight:700;">${bathCount * 6}</td><td>متر</td></tr>
+      <tr><td>وصلات ووهات بوليبروبيلين</td><td style="color:var(--gold);font-weight:700;">${bathCount * 8}</td><td>قطعة</td></tr>
+      <tr><td>وصلات صرف PVC</td><td style="color:var(--gold);font-weight:700;">${bathCount * 5}</td><td>قطعة</td></tr>
+      <tr><td>سيفون أرضي</td><td style="color:var(--gold);font-weight:700;">${bathCount}</td><td>قطعة</td></tr>
+      <tr style="background:rgba(201,168,76,0.06);"><td colspan="3" style="font-size:11px;color:var(--text3);padding:8px;">* كميات تقريبية لوحدة حمام قياسية — تتفاوت حسب تصميم الشقة والمواصفات</td></tr>
+    </table>` : ''}
+
+    <div style="margin-top:18px;padding:12px 16px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.15);border-radius:8px;font-size:11px;color:var(--text3);line-height:1.8;text-align:center;">
+      * جميع الكميات تقريبية وتعتمد على المعايير المعتادة في التشطيبات — يُنصح بمراجعتها مع المورد قبل الطلب
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة التقرير</button>
+  `;
+  document.getElementById('reportTitle').textContent = 'تقرير المسطحات';
+  show('reportScreen');
+};
+
+// ── OPENINGS TABLE HELPER ──
+function renderOpeningsTable(spaces, isAdmin) {
+  const typeLabel = {door:'🚪 باب', window:'🪟 شباك'};
+  const winLabel  = {مفصلي:'مفصلي', جرار:'جرار', فولدنج:'فولدنج'};
+
+  if(!spaces.length) return '<div style="color:var(--text3);padding:20px;text-align:center;font-size:13px;">أضف غرفاً أولاً في الجدول أعلاه</div>';
+
+  let html = '<div class="d-table-wrap"><table class="d-table"><tr><th>الغرفة</th><th>#</th><th>التصنيف</th><th>النوع</th>' + (isAdmin ? '<th></th>' : '') + '</tr>';
+
+  spaces.forEach(sp => {
+    const openings = sp.openings || [];
+    if(openings.length === 0 && !isAdmin) return; // hide empty rooms for client
+
+    // Room header row
+    html += `<tr style="background:rgba(201,168,76,0.07);">
+      <td style="font-weight:700;color:var(--text);" colspan="${isAdmin ? 4 : 4}">${sp.name||'غرفة'}</td>
+      ${isAdmin ? `<td style="text-align:center;"><button class="btn-sm btn-sm-outline" style="font-size:11px;padding:4px 10px;" onclick="addOpening('${sp.id}')">+ فتحة</button></td>` : '<td></td>'}
+    </tr>`;
+
+    if(openings.length === 0) {
+      html += `<tr><td colspan="${isAdmin?5:5}" style="color:var(--text3);font-size:12px;padding:10px 16px;">— لا توجد فتحات</td></tr>`;
+    } else {
+      openings.forEach((op, idx) => {
+        const isWin = op.type === 'window';
+        html += `<tr>
+          <td style="padding-right:24px;color:var(--text2);font-size:12px;">↳</td>
+          <td style="font-weight:700;color:var(--gold);text-align:center;">${idx + 1}</td>
+          <td>
+            ${isAdmin
+              ? `<select onchange="updOpening('${sp.id}','${op.id}','type',this.value)" style="padding:5px 8px;border:1px solid var(--cream3);border-radius:6px;font-family:Cairo;font-size:12px;background:var(--cream);">
+                  <option value="door"   ${op.type==='door'  ?'selected':''}>🚪 باب</option>
+                  <option value="window" ${op.type==='window'?'selected':''}>🪟 شباك</option>
+                </select>`
+              : typeLabel[op.type]||'—'}
+          </td>
+          <td>
+            ${isAdmin
+              ? (isWin
+                  ? `<select onchange="updOpening('${sp.id}','${op.id}','winType',this.value)" style="padding:5px 8px;border:1px solid var(--cream3);border-radius:6px;font-family:Cairo;font-size:12px;background:var(--cream);">
+                      <option value="مفصلي"  ${op.winType==='مفصلي' ?'selected':''}>مفصلي</option>
+                      <option value="جرار"   ${op.winType==='جرار'  ?'selected':''}>جرار</option>
+                      <option value="فولدنج" ${op.winType==='فولدنج'?'selected':''}>فولدنج</option>
+                    </select>`
+                  : '<span style="color:var(--text3);font-size:12px;">—</span>')
+              : (isWin ? (op.winType||'—') : '—')}
+          </td>
+          ${isAdmin ? `<td style="text-align:center;"><button class="del-row" onclick="delOpening('${sp.id}','${op.id}')">🗑</button></td>` : ''}
+        </tr>`;
+      });
+    }
+  });
+
+  html += '</table></div>';
+  return html;
+}
+
+window.addOpening = async (spaceId) => {
+  const sp = (currentProjectData.spaces||[]).find(s => s.id === spaceId);
+  if(!sp) return;
+  if(!sp.openings) sp.openings = [];
+  sp.openings.push({id:'op'+Date.now(), type:'door', winType:'مفصلي'});
+  await saveCurrentProject();
+  renderSpacesTab(document.getElementById('dashBody'));
+};
+
+window.delOpening = async (spaceId, opId) => {
+  const sp = (currentProjectData.spaces||[]).find(s => s.id === spaceId);
+  if(!sp) return;
+  sp.openings = (sp.openings||[]).filter(o => o.id !== opId);
+  await saveCurrentProject();
+  renderSpacesTab(document.getElementById('dashBody'));
+  toast('تم الحذف');
+};
+
+window.updOpening = (spaceId, opId, key, val) => {
+  const sp = (currentProjectData.spaces||[]).find(s => s.id === spaceId);
+  if(!sp) return;
+  const op = (sp.openings||[]).find(o => o.id === opId);
+  if(!op) return;
+  op[key] = val;
+  // If switched to door, clear winType display (keep value but irrelevant)
+  saveCurrentProject();
+  // Re-render only the openings table to avoid losing focus on other inputs
+  const tbody = document.getElementById('openingsTableWrap');
+  if(tbody) tbody.innerHTML = renderOpeningsTable(currentProjectData.spaces||[], true);
 };
 
 // ── GALLERY TAB ──
