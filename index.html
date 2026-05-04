@@ -1203,7 +1203,8 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
   .d-table td input{padding:4px;font-size:11px;}
   /* ── items responsive ── */
   .items-cards-wrap{display:flex;flex-direction:column;gap:12px;}
-  .item-card-mobile{background:var(--cream);border:1px solid var(--cream3);border-radius:12px;padding:14px 12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .item-card-mobile{background:var(--white);border:1px solid var(--cream3);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:box-shadow .2s;}
+  .item-card-mobile:hover{box-shadow:0 4px 16px rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.3);}
   .items-table-wrap{display:none;}
   .item-row-desktop{display:none;}
 
@@ -3622,78 +3623,108 @@ function renderItemsTab(body, type) {
            <div style="font-size:11px;color:var(--gold);font-weight:900;border-top:1px dashed var(--cream3);padding-top:2px;margin-top:2px;">=${fmt(bd.total)}</div>` : ''}`;
 
       return `
-        <!-- ── كارد الموبايل ── -->
-        <div class="item-card-mobile">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+        <!-- ── كارد الموبايل (كولابسابل) ── -->
+        <div class="item-card-mobile" id="icard-${x.id}" style="padding:0;overflow:hidden;">
+
+          <!-- ── الصف المضغوط دايماً ظاهر ── -->
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;"
+               onclick="toggleMobileCard('${x.id}')">
+            <!-- سهم التوسيع -->
+            <div id="icard-arrow-${x.id}" style="font-size:11px;color:var(--text3);transition:transform .25s;flex-shrink:0;">▼</div>
+            <!-- اسم البند -->
             <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${x.name||'بند جديد'}</div>
+              ${x.contractor ? `<div style="font-size:11px;color:var(--text3);margin-top:1px;">${x.contractor}</div>` : ''}
+            </div>
+            <!-- التكلفة والمتبقي -->
+            <div style="text-align:left;flex-shrink:0;" onclick="event.stopPropagation()">
+              <div style="font-size:14px;font-weight:900;color:var(--gold);">${fmt(bd.total)}</div>
+              <div style="font-size:10px;font-weight:700;color:${rem>0?'#dc2626':'#059669'};">${rem>0?'↓ '+fmt(rem):'✓ مكتمل'}</div>
+            </div>
+            <!-- زرار حذف سريع -->
+            <button class="del-row" onclick="event.stopPropagation();delItem('${type}','${x.id}')" style="font-size:12px;padding:2px 8px;flex-shrink:0;">🗑</button>
+          </div>
+
+          <!-- ── المحتوى القابل للطي ── -->
+          <div id="icard-body-${x.id}" style="display:none;padding:0 14px 14px;border-top:1px solid var(--cream2);">
+            <!-- اسم البند قابل للتعديل -->
+            <div style="padding-top:12px;margin-bottom:10px;">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">اسم البند</div>
               <input value="${x.name||''}"
                 oninput="updItem('${type}','${x.id}','name',this.value)"
-                style="font-size:14px;font-weight:900;color:var(--text);background:transparent;border:none;border-bottom:1px solid var(--cream3);width:100%;padding:2px 0;font-family:Cairo;">
+                style="font-size:14px;font-weight:700;width:100%;padding:7px 10px;background:var(--cream2);border:1px solid var(--cream3);border-radius:8px;font-family:Cairo;">
+            </div>
+            <!-- المقاول -->
+            <div style="margin-bottom:10px;">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">المقاول</div>
               <input value="${x.contractor||''}" placeholder="اسم المقاول"
                 oninput="updItem('${type}','${x.id}','contractor',this.value)"
-                style="font-size:11px;color:var(--text3);background:transparent;border:none;width:100%;padding:2px 0;margin-top:3px;font-family:Cairo;">
+                style="width:100%;padding:7px 10px;background:var(--cream2);border:1px solid var(--cream3);border-radius:8px;font-family:Cairo;font-size:13px;">
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+            <!-- الخامات والمدفوع -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+              <div style="background:var(--cream2);border-radius:8px;padding:8px 10px;">
+                <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">💰 الخامات / التكلفة</div>
+                ${costInner}
+              </div>
+              <div style="background:var(--cream2);border-radius:8px;padding:8px 10px;">
+                <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">✅ المدفوع</div>
+                <input type="number" value="${x.paid||0}"
+                  oninput="updItem('${type}','${x.id}','paid',this.value)"
+                  style="width:100%;">
+              </div>
+            </div>
+            <!-- الإجمالي والربح -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+              <div style="background:${rem>0?'rgba(220,38,38,0.06)':'rgba(5,150,105,0.06)'};border-radius:8px;padding:8px 10px;border:1px solid ${rem>0?'rgba(220,38,38,0.15)':'rgba(5,150,105,0.15)'};">
+                <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">الإجمالي</div>
+                <div style="font-size:13px;font-weight:900;color:var(--gold);">${fmt(bd.total)}</div>
+                <div style="font-size:10px;font-weight:700;color:${rem>0?'#dc2626':'#059669'};">${rem>0?'↓ متبقي '+fmt(rem):'✓ مكتمل'}</div>
+              </div>
+              <div style="background:rgba(201,168,76,0.06);border-radius:8px;padding:8px 10px;border:1px solid rgba(201,168,76,0.15);">
+                <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">${profitLabel}</div>
+                <div style="font-size:13px;font-weight:900;color:var(--gold);">${fmt(profit)}</div>
+              </div>
+            </div>
+            <!-- التواريخ -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+              <div>
+                <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">📅 التعاقد</div>
+                <input type="date" value="${x.contractDate||''}"
+                  oninput="updItem('${type}','${x.id}','contractDate',this.value)"
+                  style="width:100%;font-size:11px;padding:4px 6px;">
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">📦 التسليم</div>
+                <input type="date" value="${x.deliveryDate||''}"
+                  oninput="updItem('${type}','${x.id}','deliveryDate',this.value)"
+                  style="width:100%;font-size:11px;padding:4px 6px;">
+              </div>
+            </div>
+            <!-- أزرار الوضع والتفاصيل -->
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button onclick="toggleItemCostMode('${type}','${x.id}')"
-                style="font-size:10px;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:Cairo;font-weight:700;
+                style="font-size:11px;padding:6px 12px;border-radius:7px;cursor:pointer;font-family:Cairo;font-weight:700;
                 background:${modeBg};color:${modeColor};border:1px solid ${modeBdr};">
                 ${modeLabel}
               </button>
-              <button class="item-details-btn" onclick="openItemDetailsModal('${type}','${x.id}')">📋 تفاصيل</button>
-              <button class="del-row" onclick="delItem('${type}','${x.id}')" style="font-size:12px;padding:2px 8px;">🗑</button>
+              <button class="item-details-btn" onclick="openItemDetailsModal('${type}','${x.id}')" style="font-size:11px;padding:6px 12px;">📋 تفاصيل البند</button>
             </div>
+            ${(()=>{
+              const subs = x.subDetails || [];
+              if(!subs.length) return '';
+              const matSubs = subs.filter(s=>s.subType==='material');
+              const labSubs = subs.filter(s=>s.subType==='labor');
+              const matTotal = matSubs.reduce((a,s)=>a+(Number(s.price)||0),0);
+              const labTotal = labSubs.reduce((a,s)=>a+(Number(s.price)||0),0);
+              return `<div style="margin-top:8px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:8px 10px;">
+                <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:5px;">📋 التفاصيل (${subs.length} بند)</div>
+                ${matSubs.length ? `<div style="font-size:10px;color:var(--text3);">خامات: <strong style="color:var(--text);">${fmt(matTotal)} ج</strong></div>` : ''}
+                ${labSubs.length ? `<div style="font-size:10px;color:var(--text3);">مصنعيات: <strong style="color:#059669;">${fmt(labTotal)} ج</strong></div>` : ''}
+                ${x.subDetailsApply ? `<div style="font-size:10px;color:var(--gold-dk);font-weight:700;margin-top:3px;">✓ مضاف للسعر</div>` : `<div style="font-size:10px;color:var(--text3);margin-top:3px;">— للعرض فقط</div>`}
+              </div>`;
+            })()}
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-            <div style="background:var(--cream2);border-radius:8px;padding:8px 10px;">
-              <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">💰 الخامات / التكلفة</div>
-              ${costInner}
-            </div>
-            <div style="background:var(--cream2);border-radius:8px;padding:8px 10px;">
-              <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">✅ المدفوع</div>
-              <input type="number" value="${x.paid||0}"
-                oninput="updItem('${type}','${x.id}','paid',this.value)"
-                style="width:100%;">
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-            <div style="background:${rem>0?'rgba(220,38,38,0.06)':'rgba(5,150,105,0.06)'};border-radius:8px;padding:8px 10px;border:1px solid ${rem>0?'rgba(220,38,38,0.15)':'rgba(5,150,105,0.15)'};">
-              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">الإجمالي</div>
-              <div style="font-size:13px;font-weight:900;color:var(--gold);">${fmt(bd.total)}</div>
-              <div style="font-size:10px;font-weight:700;color:${rem>0?'#dc2626':'#059669'};">${rem>0?'↓ متبقي '+fmt(rem):'✓ مكتمل'}</div>
-            </div>
-            <div style="background:rgba(201,168,76,0.06);border-radius:8px;padding:8px 10px;border:1px solid rgba(201,168,76,0.15);">
-              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">${profitLabel}</div>
-              <div style="font-size:13px;font-weight:900;color:var(--gold);">${fmt(profit)}</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div>
-              <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">📅 التعاقد</div>
-              <input type="date" value="${x.contractDate||''}"
-                oninput="updItem('${type}','${x.id}','contractDate',this.value)"
-                style="width:100%;font-size:11px;padding:4px 6px;">
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">📦 التسليم</div>
-              <input type="date" value="${x.deliveryDate||''}"
-                oninput="updItem('${type}','${x.id}','deliveryDate',this.value)"
-                style="width:100%;font-size:11px;padding:4px 6px;">
-            </div>
-          </div>
-          ${(()=>{
-            const subs = x.subDetails || [];
-            if(!subs.length) return '';
-            const matSubs = subs.filter(s=>s.subType==='material');
-            const labSubs = subs.filter(s=>s.subType==='labor');
-            const matTotal = matSubs.reduce((a,s)=>a+(Number(s.price)||0),0);
-            const labTotal = labSubs.reduce((a,s)=>a+(Number(s.price)||0),0);
-            return `<div style="margin-top:8px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:8px 10px;">
-              <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:5px;">📋 التفاصيل (${subs.length} بند)</div>
-              ${matSubs.length ? `<div style="font-size:10px;color:var(--text3);">خامات: <strong style="color:var(--text);">${fmt(matTotal)} ج</strong></div>` : ''}
-              ${labSubs.length ? `<div style="font-size:10px;color:var(--text3);">مصنعيات: <strong style="color:#059669;">${fmt(labTotal)} ج</strong></div>` : ''}
-              ${x.subDetailsApply ? `<div style="font-size:10px;color:var(--gold-dk);font-weight:700;margin-top:3px;">✓ مضاف للسعر</div>` : `<div style="font-size:10px;color:var(--text3);margin-top:3px;">— للعرض فقط</div>`}
-            </div>`;
-          })()}
         </div>
 
         <!-- ── صف الجدول على الديسكتوب ── -->
@@ -3817,8 +3848,17 @@ function renderItemsTab(body, type) {
   `;
 }
 
-// ══════════════════════════════════════
-// ITEM DETAILS MODAL — تفاصيل البند (خامات ومصنعيات)
+// ── MOBILE CARD COLLAPSE / EXPAND ──
+window.toggleMobileCard = function(id) {
+  const body  = document.getElementById('icard-body-' + id);
+  const arrow = document.getElementById('icard-arrow-' + id);
+  if(!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display  = isOpen ? 'none' : 'block';
+  if(arrow) arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+};
+
+// ══════════════════════════════════════ — تفاصيل البند (خامات ومصنعيات)
 // ══════════════════════════════════════
 window.openItemDetailsModal = function(type, id) {
   const item = (currentProjectData[type]||[]).find(x => x.id === id);
