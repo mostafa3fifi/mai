@@ -168,6 +168,11 @@ body{background:var(--cream)!important;}
 @media(min-width:769px){
   .mobile-nav-drawer{display:none!important;}
   .hamburger{display:none!important;}
+  /* items: على الديسكتوب — الجدول فقط */
+  .items-cards-wrap{display:none!important;}
+  .items-table-wrap{display:block!important;}
+  .item-row-desktop{display:table-row!important;}
+  .item-card-mobile{display:none!important;}
 }
 
 /* ══════════════════════════════════════
@@ -496,6 +501,116 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
   .modal-logo-text{font-size:18px;}
 }
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ── ITEM DETAILS MODAL ── */
+.details-modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(14,12,9,0.72);z-index:1100;
+  align-items:center;justify-content:center;padding:16px;
+  backdrop-filter:blur(10px);overflow-y:auto;
+}
+.details-modal-overlay.open{display:flex;}
+.details-modal{
+  background:var(--white);border-radius:20px;
+  padding:28px 24px;width:100%;max-width:560px;
+  box-shadow:0 24px 80px rgba(14,12,9,0.28);
+  animation:slideUp .3s cubic-bezier(.16,1,.3,1);
+  max-height:92vh;overflow-y:auto;
+  position:relative;
+}
+.details-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+  padding-bottom:14px;
+  border-bottom:2px solid var(--cream2);
+}
+.details-modal-title{font-size:16px;font-weight:900;color:var(--text);}
+.details-modal-close{
+  background:none;border:none;font-size:18px;cursor:pointer;
+  color:var(--text3);padding:4px 8px;border-radius:8px;
+  transition:all .2s;
+}
+.details-modal-close:hover{background:var(--cream2);color:var(--text);}
+.details-section-label{
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  color:var(--text3);text-transform:uppercase;
+  margin:16px 0 8px;
+}
+.details-row{
+  display:grid;grid-template-columns:1fr 100px 36px;gap:8px;
+  align-items:center;margin-bottom:8px;
+}
+.details-row input{
+  padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;
+  font-family:'Cairo';font-size:13px;color:var(--text);
+  background:var(--cream2);transition:border-color .2s;width:100%;
+}
+.details-row input:focus{outline:none;border-color:var(--gold);}
+.details-row-del{
+  background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.2);
+  color:#dc2626;border-radius:8px;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;transition:all .2s;
+}
+.details-row-del:hover{background:rgba(220,38,38,0.15);}
+.details-add-btn{
+  background:none;border:1.5px dashed var(--cream3);color:var(--text3);
+  border-radius:8px;padding:8px 14px;font-family:'Cairo';font-size:13px;
+  font-weight:700;cursor:pointer;width:100%;margin-top:4px;
+  transition:all .2s;
+}
+.details-add-btn:hover{border-color:var(--gold);color:var(--gold);}
+.details-total-bar{
+  background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(201,168,76,0.04));
+  border:1px solid rgba(201,168,76,0.25);border-radius:12px;
+  padding:14px 18px;margin-top:16px;
+}
+.details-total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;color:var(--text2);margin-bottom:6px;
+}
+.details-total-row:last-child{
+  margin-bottom:0;padding-top:8px;border-top:1px solid rgba(201,168,76,0.2);
+  font-size:15px;font-weight:900;color:var(--text);
+}
+.details-total-val{font-weight:700;color:var(--gold);}
+.details-apply-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:14px;padding:12px 16px;
+  background:var(--cream2);border-radius:10px;
+  gap:12px;flex-wrap:wrap;
+}
+.details-apply-label{font-size:13px;font-weight:700;color:var(--text2);}
+.details-toggle{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+}
+.details-toggle-input{
+  width:40px;height:22px;appearance:none;
+  background:var(--cream3);border-radius:20px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.details-toggle-input:checked{background:var(--gold);}
+.details-toggle-input::after{
+  content:'';position:absolute;top:3px;right:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform .2s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+}
+.details-toggle-input:checked::after{transform:translateX(-18px);}
+.details-save-btn{
+  background:linear-gradient(135deg,var(--gold),var(--gold-dk));
+  color:#fff;border:none;border-radius:10px;padding:11px 24px;
+  font-family:'Cairo';font-size:14px;font-weight:700;cursor:pointer;
+  transition:all .2s;margin-top:16px;width:100%;
+}
+.details-save-btn:hover{opacity:.9;transform:translateY(-1px);}
+.item-details-btn{
+  background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);
+  color:var(--gold-dk);border-radius:6px;font-family:'Cairo';
+  font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.item-details-btn:hover{background:rgba(201,168,76,0.2);}
 .modal-logo{text-align:center;margin-bottom:28px;}
 .modal-logo-text{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--text) 30%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .modal-logo-sub{font-size:12px;color:var(--text3);margin-top:3px;}
@@ -636,6 +751,9 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
 .proj-pct{font-size:11px;color:var(--text3);margin-top:6px;font-weight:600;}
 .proj-arrow{position:absolute;top:50%;left:20px;transform:translateY(-50%);color:var(--cream3);font-size:16px;transition:all .2s;}
 .proj-card:hover .proj-arrow{color:var(--gold);left:16px;}
+.proj-dup-btn{position:absolute;top:12px;left:12px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);color:#2563eb;border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer;opacity:0;transition:opacity .2s;font-family:'Cairo';}
+.proj-card:hover .proj-dup-btn{opacity:1;}
+@media(max-width:600px){.proj-dup-btn{opacity:1;}}
 .add-proj-btn{
   background:transparent;border:1.5px dashed var(--cream3);border-radius:16px;
   padding:24px;cursor:pointer;color:var(--text3);transition:all .25s;
@@ -1083,6 +1201,11 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
   .d-table th{padding:8px 5px;font-size:10px;}
   .d-table td{padding:8px 4px;font-size:11px;}
   .d-table td input{padding:4px;font-size:11px;}
+  /* ── items responsive ── */
+  .items-cards-wrap{display:flex;flex-direction:column;gap:12px;}
+  .item-card-mobile{background:var(--cream);border:1px solid var(--cream3);border-radius:12px;padding:14px 12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .items-table-wrap{display:none;}
+  .item-row-desktop{display:none;}
 
   /* ── Info tab ── */
   .info-row{grid-template-columns:1fr!important;}
@@ -2262,25 +2385,84 @@ async function showAdminDashboard() {
     } catch(e) { /* ignore */ }
   }
 
-  body.innerHTML = salaryReminderHtml + '<div class="projects-grid" id="projGrid"></div>';
+  const dupProjects = projects.filter(p => p.meta?.duplicatedFromId);
+  const dupCount = dupProjects.length;
+
+  body.innerHTML = salaryReminderHtml + `
+    <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;">
+      <button id="filterAll" onclick="renderProjGrid(window._allProjects,'all')"
+        style="padding:8px 18px;border-radius:20px;font-family:Cairo;font-size:13px;font-weight:700;cursor:pointer;border:none;background:var(--gold);color:#fff;">
+        كل المشاريع (${projects.length})
+      </button>
+      <button id="filterDup" onclick="renderProjGrid(window._allProjects,'dup')"
+        style="padding:8px 18px;border-radius:20px;font-family:Cairo;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid rgba(37,99,235,0.4);background:rgba(37,99,235,0.07);color:#2563eb;">
+        📋 Duplicated (${dupCount})
+      </button>
+    </div>
+    <div class="projects-grid" id="projGrid"></div>`;
+
+  window._allProjects = projects;
+  window._activeFilter = 'all';
+  renderProjGrid(projects, 'all');
+}
+
+function renderProjGrid(projects, filter) {
+  window._activeFilter = filter;
+  // تحديث أزرار الفلتر
+  const btnAll = document.getElementById('filterAll');
+  const btnDup = document.getElementById('filterDup');
+  if(btnAll && btnDup) {
+    if(filter === 'all') {
+      btnAll.style.background='var(--gold)'; btnAll.style.color='#fff'; btnAll.style.border='none';
+      btnDup.style.background='rgba(37,99,235,0.07)'; btnDup.style.color='#2563eb'; btnDup.style.border='1.5px solid rgba(37,99,235,0.4)';
+    } else {
+      btnDup.style.background='#2563eb'; btnDup.style.color='#fff'; btnDup.style.border='none';
+      btnAll.style.background='var(--cream2)'; btnAll.style.color='var(--text2)'; btnAll.style.border='1px solid var(--cream3)';
+    }
+  }
+
+  const list = filter === 'dup' ? projects.filter(p => p.meta?.duplicatedFromId) : projects;
   const grid = document.getElementById('projGrid');
-  projects.forEach(p => {
+  if(!grid) return;
+  grid.innerHTML = '';
+
+  if(!list.length) {
+    grid.innerHTML = filter === 'dup'
+      ? '<div style="color:var(--text3);font-size:14px;padding:40px;text-align:center;">لا توجد مشاريع منسوخة بعد.</div>'
+      : '<div style="color:var(--text3);font-size:14px;padding:40px;text-align:center;">لا توجد مشاريع بعد.</div>';
+  }
+
+  list.forEach(p => {
     const pct = p.meta?.progress || 0;
     const card = document.createElement('div');
     card.className = 'proj-card';
     const pbarColor = pct>=100?'#059669':pct>=60?'var(--gold)':pct>=30?'#d97706':'#dc2626';
-    card.innerHTML = `<div class="proj-icon">🏗️</div><div class="proj-name">${p.meta?.name||'مشروع'}</div><div class="proj-meta">${p.meta?.clientName||'—'} · إنجاز ${pct}%</div><div class="pbar"><div class="pbar-fill" style="width:0%;background:${pbarColor};transition:width 0.8s cubic-bezier(.4,0,.2,1)"></div></div><div class="proj-pct" style="color:${pbarColor}">${pct}%</div><div class="proj-arrow">←</div>`;
+    const dupBadge = p.meta?.duplicatedFromName
+      ? `<div style="font-size:10px;color:#2563eb;font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px;">
+           <span style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.25);border-radius:10px;padding:1px 8px;">
+             📋 نسخة من: ${p.meta.duplicatedFromName}
+           </span>
+         </div>`
+      : '';
+    card.innerHTML = `
+      <div class="proj-icon">🏗️</div>
+      <div class="proj-name">${p.meta?.name||'مشروع'}</div>
+      ${dupBadge}
+      <div class="proj-meta" style="margin-top:${dupBadge?'4px':'0'}">${p.meta?.clientName||'—'} · إنجاز ${pct}%</div>
+      <div class="pbar"><div class="pbar-fill" style="width:0%;background:${pbarColor};transition:width 0.8s cubic-bezier(.4,0,.2,1)"></div></div>
+      <div class="proj-pct" style="color:${pbarColor}">${pct}%</div>
+      <div class="proj-arrow">←</div>
+      <button class="proj-dup-btn" title="نسخ المشروع" onclick="event.stopPropagation();quickDuplicateProject('${p.id}')">📋</button>`;
     setTimeout(() => { const fill = card.querySelector('.pbar-fill'); if(fill) fill.style.width = pct+'%'; }, 80);
     card.onclick = () => openAdminProject(p.id, p);
     grid.appendChild(card);
   });
-  const addBtn = document.createElement('button');
-  addBtn.className = 'add-proj-btn';
-  addBtn.innerHTML = '<span style="font-size:22px;">+</span> مشروع جديد';
-  addBtn.onclick = () => openModal('addProjModal');
-  grid.appendChild(addBtn);
-  if(!projects.length) {
-    grid.innerHTML = '<div style="color:var(--text3);font-size:14px;padding:40px;text-align:center;">لا توجد مشاريع بعد. أنشئ أول مشروع!</div>';
+
+  if(filter === 'all') {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-proj-btn';
+    addBtn.innerHTML = '<span style="font-size:22px;">+</span> مشروع جديد';
+    addBtn.onclick = () => openModal('addProjModal');
     grid.appendChild(addBtn);
   }
 }
@@ -3403,59 +3585,179 @@ function renderItemsTab(body, type) {
 
   let tableHtml = '';
   if(isAdmin) {
-    // حساب نسبة الربح — Admin only
     const profitRate = type === 'finish' ? 0.20 : 0.10;
-    let totalItemsCost = 0;
-    data.forEach((x,i) => { totalItemsCost += getItemTotalCost(type, x, i); });
-    const profitAmt = totalItemsCost * profitRate;
-    // فحص وجود ازدواج: بنود عندها مقاول مرتبط ومعه cost غير صفر
-    const doubleCountWarnings = data.filter((x,i) => getLinkedCrewLabor(type,x,i) > 0 && (x.cost||0) > 0);
-    const warningHtml = doubleCountWarnings.length ? `
-      <div style="background:rgba(234,179,8,0.1);border:1.5px solid rgba(234,179,8,0.4);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;">
-        <span style="font-size:20px;flex-shrink:0;">⚠️</span>
-        <div>
-          <div style="font-weight:900;font-size:13px;color:#92400e;margin-bottom:4px;">تنبيه: احتمال ازدواج في التكلفة</div>
-          <div style="font-size:12px;color:#92400e;line-height:1.7;">
-            البنود التالية عندها <strong>مصنعية مقاول مرتبط</strong> وفي نفس الوقت <strong>تكلفة مُدخلة</strong>:<br>
-            ${doubleCountWarnings.map(x=>`• <strong>${x.name}</strong>`).join(' — ')}<br>
-            <span style="margin-top:4px;display:block;">لو التكلفة المُدخلة شاملة المصنعية بالفعل → <strong>اجعل مصنعية المقاول في الطاقم = 0</strong> أو افصل الخامات والمصنعية.</span>
-          </div>
-        </div>
-      </div>` : '';
-    const rows = data.map((x,i) => {
-      const crewLabor = getLinkedCrewLabor(type, x, i);
-      const totalCost = getItemTotalCost(type, x, i);
-      const rem = totalCost-(x.paid||0);
-      const profit = totalCost * profitRate;
-      const hasDoubleRisk = crewLabor > 0 && (x.cost||0) > 0;
-      return `<tr${hasDoubleRisk?' style="background:rgba(234,179,8,0.05);"':''}>
-        <td><input value="${x.name||''}" oninput="updItem('${type}','${x.id}','name',this.value)"></td>
-        <td><input value="${x.contractor||''}" placeholder="اسم المقاول" style="font-size:11px;" oninput="updItem('${type}','${x.id}','contractor',this.value)"></td>
-        <td>
-          <input type="number" value="${x.cost||0}" oninput="updItem('${type}','${x.id}','cost',this.value)" onchange="renderItemsTab(document.getElementById('dashBody'),'${type}')">
-          ${crewLabor?`<div style="font-size:10px;color:#059669;font-weight:700;margin-top:3px;">+ مصنعية طاقم ${fmt(crewLabor)}</div>`:''}
-          ${crewLabor?`<div style="font-size:10px;color:var(--gold);font-weight:900;margin-top:2px;border-top:1px dashed var(--cream3);padding-top:2px;">= إجمالي ${fmt(totalCost)}</div>`:''}
-          ${hasDoubleRisk?`<div style="font-size:9px;color:#b45309;margin-top:2px;">⚠️ راجع التضارب</div>`:''}
-        </td>
-        <td><input type="number" value="${x.paid||0}" oninput="updItem('${type}','${x.id}','paid',this.value)"></td>
-        <td style="color:${rem>0?'#dc2626':'#059669'};font-size:13px;">${fmt(rem)}</td>
-        <td style="color:var(--gold);font-size:12px;font-weight:700;">${fmt(profit)}</td>
-        <td><input type="date" value="${x.contractDate||''}" oninput="updItem('${type}','${x.id}','contractDate',this.value)" title="تاريخ التعاقد" style="font-size:11px;padding:4px 6px;"></td>
-        <td><input type="date" value="${x.deliveryDate||''}" oninput="updItem('${type}','${x.id}','deliveryDate',this.value)" title="تاريخ التسليم" style="font-size:11px;padding:4px 6px;"></td>
-        <td style="display:flex;gap:4px;justify-content:center;">
-          <button class="del-row" title="حذف" onclick="delItem('${type}','${x.id}')">🗑</button>
-        </td>
-      </tr>`;
-    }).join('');
+    let totalMaterials = 0, totalLabor = 0, totalCostAll = 0;
+    data.forEach((x,i) => {
+      const bd = getItemCostBreakdown(type, x, i);
+      totalMaterials += bd.manual ? 0 : bd.materials;
+      totalLabor     += bd.manual ? 0 : bd.labor;
+      totalCostAll   += bd.total;
+    });
+    const profitAmt = totalCostAll * profitRate;
     const profitLabel = type==='finish' ? 'ربح 20%' : 'ربح 10%';
+
+    const rows = data.map((x,i) => {
+      const bd = getItemCostBreakdown(type, x, i);
+      const rem = bd.total - (x.paid||0);
+      const profit = bd.total * profitRate;
+      const isManual = bd.manual;
+      const modeColor = isManual ? '#7c3aed' : '#059669';
+      const modeBg    = isManual ? 'rgba(124,58,237,0.1)' : 'rgba(5,150,105,0.1)';
+      const modeBdr   = isManual ? 'rgba(124,58,237,0.3)' : 'rgba(5,150,105,0.3)';
+      const modeLabel = isManual ? '📝 يدوي' : '🧮 حصر';
+
+      // ── بناء محتوى الخامات ──
+      const costInner = isManual
+        ? `<input type="number" value="${x.cost||0}"
+             oninput="updItem('${type}','${x.id}','cost',this.value)"
+             onchange="renderItemsTab(document.getElementById('dashBody'),'${type}')"
+             style="width:100%;">
+           <div style="font-size:10px;margin-top:3px;color:#7c3aed;font-weight:700;">الطاقم لا يُضاف</div>`
+        : `<div style="font-size:10px;color:var(--text3);font-weight:700;margin-bottom:2px;">خامات</div>
+           <input type="number" value="${x.cost||0}"
+             oninput="updItem('${type}','${x.id}','cost',this.value)"
+             onchange="renderItemsTab(document.getElementById('dashBody'),'${type}')"
+             style="width:100%;">
+           ${bd.labor ? `<div style="font-size:10px;color:#059669;font-weight:700;margin-top:3px;">+مصنعية ${fmt(bd.labor)}</div>
+           <div style="font-size:11px;color:var(--gold);font-weight:900;border-top:1px dashed var(--cream3);padding-top:2px;margin-top:2px;">=${fmt(bd.total)}</div>` : ''}`;
+
+      return `
+        <!-- ── كارد الموبايل ── -->
+        <div class="item-card-mobile">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+            <div style="flex:1;min-width:0;">
+              <input value="${x.name||''}"
+                oninput="updItem('${type}','${x.id}','name',this.value)"
+                style="font-size:14px;font-weight:900;color:var(--text);background:transparent;border:none;border-bottom:1px solid var(--cream3);width:100%;padding:2px 0;font-family:Cairo;">
+              <input value="${x.contractor||''}" placeholder="اسم المقاول"
+                oninput="updItem('${type}','${x.id}','contractor',this.value)"
+                style="font-size:11px;color:var(--text3);background:transparent;border:none;width:100%;padding:2px 0;margin-top:3px;font-family:Cairo;">
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+              <button onclick="toggleItemCostMode('${type}','${x.id}')"
+                style="font-size:10px;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:Cairo;font-weight:700;
+                background:${modeBg};color:${modeColor};border:1px solid ${modeBdr};">
+                ${modeLabel}
+              </button>
+              <button class="item-details-btn" onclick="openItemDetailsModal('${type}','${x.id}')">📋 تفاصيل</button>
+              <button class="del-row" onclick="delItem('${type}','${x.id}')" style="font-size:12px;padding:2px 8px;">🗑</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div style="background:var(--cream2);border-radius:8px;padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">💰 الخامات / التكلفة</div>
+              ${costInner}
+            </div>
+            <div style="background:var(--cream2);border-radius:8px;padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">✅ المدفوع</div>
+              <input type="number" value="${x.paid||0}"
+                oninput="updItem('${type}','${x.id}','paid',this.value)"
+                style="width:100%;">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div style="background:${rem>0?'rgba(220,38,38,0.06)':'rgba(5,150,105,0.06)'};border-radius:8px;padding:8px 10px;border:1px solid ${rem>0?'rgba(220,38,38,0.15)':'rgba(5,150,105,0.15)'};">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">الإجمالي</div>
+              <div style="font-size:13px;font-weight:900;color:var(--gold);">${fmt(bd.total)}</div>
+              <div style="font-size:10px;font-weight:700;color:${rem>0?'#dc2626':'#059669'};">${rem>0?'↓ متبقي '+fmt(rem):'✓ مكتمل'}</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.06);border-radius:8px;padding:8px 10px;border:1px solid rgba(201,168,76,0.15);">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">${profitLabel}</div>
+              <div style="font-size:13px;font-weight:900;color:var(--gold);">${fmt(profit)}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">📅 التعاقد</div>
+              <input type="date" value="${x.contractDate||''}"
+                oninput="updItem('${type}','${x.id}','contractDate',this.value)"
+                style="width:100%;font-size:11px;padding:4px 6px;">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">📦 التسليم</div>
+              <input type="date" value="${x.deliveryDate||''}"
+                oninput="updItem('${type}','${x.id}','deliveryDate',this.value)"
+                style="width:100%;font-size:11px;padding:4px 6px;">
+            </div>
+          </div>
+          ${(()=>{
+            const subs = x.subDetails || [];
+            if(!subs.length) return '';
+            const matSubs = subs.filter(s=>s.subType==='material');
+            const labSubs = subs.filter(s=>s.subType==='labor');
+            const matTotal = matSubs.reduce((a,s)=>a+(Number(s.price)||0),0);
+            const labTotal = labSubs.reduce((a,s)=>a+(Number(s.price)||0),0);
+            return `<div style="margin-top:8px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:8px 10px;">
+              <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:5px;">📋 التفاصيل (${subs.length} بند)</div>
+              ${matSubs.length ? `<div style="font-size:10px;color:var(--text3);">خامات: <strong style="color:var(--text);">${fmt(matTotal)} ج</strong></div>` : ''}
+              ${labSubs.length ? `<div style="font-size:10px;color:var(--text3);">مصنعيات: <strong style="color:#059669;">${fmt(labTotal)} ج</strong></div>` : ''}
+              ${x.subDetailsApply ? `<div style="font-size:10px;color:var(--gold-dk);font-weight:700;margin-top:3px;">✓ مضاف للسعر</div>` : `<div style="font-size:10px;color:var(--text3);margin-top:3px;">— للعرض فقط</div>`}
+            </div>`;
+          })()}
+        </div>
+
+        <!-- ── صف الجدول على الديسكتوب ── -->
+        <tr class="item-row-desktop">
+          <td>
+            <input value="${x.name||''}" oninput="updItem('${type}','${x.id}','name',this.value)"
+              style="min-width:80px;">
+            <button onclick="toggleItemCostMode('${type}','${x.id}')"
+              style="font-size:9px;padding:2px 7px;border-radius:4px;cursor:pointer;font-family:Cairo;font-weight:700;white-space:nowrap;margin-top:4px;display:block;
+              background:${modeBg};color:${modeColor};border:1px solid ${modeBdr};">
+              ${modeLabel}
+            </button>
+            <button class="item-details-btn" onclick="openItemDetailsModal('${type}','${x.id}')" style="margin-top:4px;display:block;">📋 تفاصيل</button>
+          </td>
+          <td><input value="${x.contractor||''}" placeholder="اسم المقاول" style="font-size:11px;"
+            oninput="updItem('${type}','${x.id}','contractor',this.value)"></td>
+          <td>${costInner}</td>
+          <td><input type="number" value="${x.paid||0}"
+            oninput="updItem('${type}','${x.id}','paid',this.value)"></td>
+          <td style="color:${rem>0?'#dc2626':'#059669'};font-size:13px;font-weight:700;">
+            ${fmt(bd.total)}<br>
+            <span style="font-size:11px;">${rem>0?'↓ '+fmt(rem):'✓'}</span>
+          </td>
+          <td style="color:var(--gold);font-size:12px;font-weight:700;">${fmt(profit)}</td>
+          <td><input type="date" value="${x.contractDate||''}"
+            oninput="updItem('${type}','${x.id}','contractDate',this.value)"
+            style="font-size:11px;padding:4px 6px;"></td>
+          <td><input type="date" value="${x.deliveryDate||''}"
+            oninput="updItem('${type}','${x.id}','deliveryDate',this.value)"
+            style="font-size:11px;padding:4px 6px;"></td>
+          <td><button class="del-row" onclick="delItem('${type}','${x.id}')">🗑</button></td>
+        </tr>`;
+    }).join('');
+
+    const emptyMsg = `<tr class="item-row-desktop"><td colspan="9" style="color:var(--text3);padding:20px;">لا توجد بنود</td></tr>
+                      <div class="item-card-mobile" style="color:var(--text3);padding:20px;text-align:center;">لا توجد بنود</div>`;
+
     tableHtml = `
-      ${warningHtml}
-      <div class="d-table-wrap"><table class="d-table"><tr><th>البند</th><th>المقاول</th><th>التكلفة (+ مصنعية الطاقم = الإجمالي)</th><th>المدفوع</th><th>المتبقي</th><th>${profitLabel}</th><th>📅 التعاقد</th><th>📦 التسليم</th><th></th></tr>${rows||'<tr><td colspan="9" style="color:var(--text3);padding:20px;">لا توجد بنود</td></tr>'}</table></div>
-      <div style="background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.03));border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:14px 18px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:13px;font-weight:700;color:var(--text2);">إجمالي التكاليف: <strong style="color:var(--text)">${fmt(totalItemsCost)}</strong></span>
-        <span style="font-size:13px;font-weight:700;color:var(--gold);">نسبة ربح المكتب (${type==='finish'?'20':'10'}%): <strong>${fmt(profitAmt)}</strong></span>
-      </div>`;
-  } else if(isEngineer) {
+      <div style="background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.7;">
+        <strong style="color:#059669;">🧮 حصر</strong> = خامات + مصنعية الطاقم &nbsp;|&nbsp;
+        <strong style="color:#7c3aed;">📝 يدوي</strong> = الإجمالي المُدخل فقط
+      </div>
+      <!-- كاردات الموبايل -->
+      <div class="items-cards-wrap">
+        ${data.length ? '' : '<div style="color:var(--text3);padding:20px;text-align:center;">لا توجد بنود</div>'}
+        ${rows}
+      </div>
+      <!-- جدول الديسكتوب -->
+      <div class="d-table-wrap items-table-wrap">
+        <table class="d-table">
+          <tr><th>البند</th><th>المقاول</th><th>الخامات</th><th>المدفوع</th><th>الإجمالي</th><th>${profitLabel}</th><th>📅 التعاقد</th><th>📦 التسليم</th><th></th></tr>
+          ${data.length ? rows : '<tr><td colspan="9" style="color:var(--text3);padding:20px;">لا توجد بنود</td></tr>'}
+        </table>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.03));border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:14px 18px;margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--text3);">خامات: <strong style="color:var(--text);">${fmt(totalMaterials)}</strong></span>
+            <span style="font-size:12px;color:#059669;">+ مصنعية: <strong>${fmt(totalLabor)}</strong></span>
+            <span style="font-size:13px;font-weight:900;">= <strong style="color:var(--gold);">${fmt(totalCostAll)}</strong></span>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:var(--gold);">ربح ${type==='finish'?'20':'10'}%: <strong>${fmt(profitAmt)}</strong></span>
+        </div>
+      </div>`;  } else if(isEngineer) {
     // للمهندس: يرى الكل بدون نسبة المكتب والأرباح
     let totalItemsCost = 0;
     data.forEach((x,i) => { totalItemsCost += getItemTotalCost(type, x, i); });
@@ -3515,14 +3817,180 @@ function renderItemsTab(body, type) {
   `;
 }
 
+// ══════════════════════════════════════
+// ITEM DETAILS MODAL — تفاصيل البند (خامات ومصنعيات)
+// ══════════════════════════════════════
+window.openItemDetailsModal = function(type, id) {
+  const item = (currentProjectData[type]||[]).find(x => x.id === id);
+  if(!item) return;
+
+  // إزالة أي modal سابق
+  document.getElementById('itemDetailsModal')?.remove();
+
+  const subs = item.subDetails ? JSON.parse(JSON.stringify(item.subDetails)) : [];
+  const applyToPrice = item.subDetailsApply !== false && item.subDetailsApply !== undefined ? item.subDetailsApply : false;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'itemDetailsModal';
+  overlay.className = 'details-modal-overlay open';
+
+  function getMatTotal() {
+    return subs.filter(s=>s.subType==='material').reduce((a,s)=>a+(Number(s.price)||0),0);
+  }
+  function getLabTotal() {
+    return subs.filter(s=>s.subType==='labor').reduce((a,s)=>a+(Number(s.price)||0),0);
+  }
+  function getGrandTotal() { return getMatTotal() + getLabTotal(); }
+
+  function renderModal() {
+    const matSubs = subs.filter(s=>s.subType==='material');
+    const labSubs = subs.filter(s=>s.subType==='labor');
+    const currentApply = overlay.querySelector('#detailsApplyToggle')?.checked ?? applyToPrice;
+
+    const matRows = subs.map((s,i) => s.subType !== 'material' ? '' : `
+      <div class="details-row" data-idx="${i}">
+        <input type="text" placeholder="اسم الخامة" value="${s.name||''}"
+          oninput="window._detailsUpdateSub(${i},'name',this.value)"
+          style="border-radius:8px 0 0 8px;">
+        <input type="number" placeholder="السعر" value="${s.price||''}"
+          oninput="window._detailsUpdateSub(${i},'price',this.value)">
+        <button class="details-row-del" onclick="window._detailsDelSub(${i})">✕</button>
+      </div>`).join('');
+
+    const labRows = subs.map((s,i) => s.subType !== 'labor' ? '' : `
+      <div class="details-row" data-idx="${i}">
+        <input type="text" placeholder="اسم المصنعية" value="${s.name||''}"
+          oninput="window._detailsUpdateSub(${i},'name',this.value)">
+        <input type="number" placeholder="السعر" value="${s.price||''}"
+          oninput="window._detailsUpdateSub(${i},'price',this.value)">
+        <button class="details-row-del" onclick="window._detailsDelSub(${i})">✕</button>
+      </div>`).join('');
+
+    const matTotal = getMatTotal();
+    const labTotal = getLabTotal();
+    const grandTotal = matTotal + labTotal;
+    const applyChecked = currentApply ? 'checked' : '';
+
+    overlay.innerHTML = `
+      <div class="details-modal">
+        <div class="details-modal-header">
+          <div class="details-modal-title">📋 تفاصيل البند: ${item.name||'—'}</div>
+          <button class="details-modal-close" onclick="document.getElementById('itemDetailsModal').remove()">✕</button>
+        </div>
+
+        <!-- خامات -->
+        <div class="details-section-label" style="color:#059669;">🧱 الخامات</div>
+        <div style="display:grid;grid-template-columns:1fr 100px 36px;gap:8px;margin-bottom:4px;">
+          <div style="font-size:11px;color:var(--text3);font-weight:700;padding:0 4px;">الاسم</div>
+          <div style="font-size:11px;color:var(--text3);font-weight:700;text-align:center;">السعر (ج)</div>
+          <div></div>
+        </div>
+        <div id="detailsMatRows">${matRows || '<div style="font-size:12px;color:var(--text3);padding:6px 4px;">لا توجد خامات بعد</div>'}</div>
+        <button class="details-add-btn" onclick="window._detailsAddSub('material')">+ إضافة خامة</button>
+
+        <!-- مصنعيات -->
+        <div class="details-section-label" style="color:#7c3aed;margin-top:18px;">⚙️ المصنعيات</div>
+        <div style="display:grid;grid-template-columns:1fr 100px 36px;gap:8px;margin-bottom:4px;">
+          <div style="font-size:11px;color:var(--text3);font-weight:700;padding:0 4px;">الاسم</div>
+          <div style="font-size:11px;color:var(--text3);font-weight:700;text-align:center;">السعر (ج)</div>
+          <div></div>
+        </div>
+        <div id="detailsLabRows">${labRows || '<div style="font-size:12px;color:var(--text3);padding:6px 4px;">لا توجد مصنعيات بعد</div>'}</div>
+        <button class="details-add-btn" onclick="window._detailsAddSub('labor')">+ إضافة مصنعية</button>
+
+        <!-- المجموع -->
+        <div class="details-total-bar">
+          ${matTotal ? `<div class="details-total-row"><span>🧱 إجمالي الخامات</span><span class="details-total-val">${matTotal.toLocaleString('ar-EG-u-nu-latn')} ج</span></div>` : ''}
+          ${labTotal ? `<div class="details-total-row"><span>⚙️ إجمالي المصنعيات</span><span class="details-total-val" style="color:#7c3aed;">${labTotal.toLocaleString('ar-EG-u-nu-latn')} ج</span></div>` : ''}
+          <div class="details-total-row">
+            <span>💰 الإجمالي الكلي</span>
+            <span class="details-total-val" style="font-size:17px;">${grandTotal.toLocaleString('ar-EG-u-nu-latn')} ج</span>
+          </div>
+        </div>
+
+        <!-- خيار إظهار في السعر -->
+        <div class="details-apply-row">
+          <div>
+            <div class="details-apply-label">إضافة المجموع لسعر البند</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">إيقاف = للعرض فقط بدون تأثير على السعر</div>
+          </div>
+          <label class="details-toggle">
+            <input type="checkbox" class="details-toggle-input" id="detailsApplyToggle" ${applyChecked}>
+          </label>
+        </div>
+
+        <button class="details-save-btn" onclick="window._detailsSave('${type}','${id}')">💾 حفظ التفاصيل</button>
+      </div>`;
+  }
+
+  // دوال التعديل
+  window._detailsUpdateSub = function(idx, key, val) {
+    if(subs[idx]) subs[idx][key] = key === 'price' ? (Number(val)||0) : val;
+    // تحديث الإجماليات فقط بدون إعادة رسم كامل
+    _detailsRefreshTotals();
+  };
+  window._detailsAddSub = function(subType) {
+    subs.push({subType, name:'', price:0});
+    renderModal();
+  };
+  window._detailsDelSub = function(idx) {
+    subs.splice(idx,1);
+    renderModal();
+  };
+  window._detailsRefreshTotals = function() {
+    const matTotal = getMatTotal();
+    const labTotal = getLabTotal();
+    const grandTotal = matTotal + labTotal;
+    const bar = overlay.querySelector('.details-total-bar');
+    if(bar) bar.innerHTML = `
+      ${matTotal ? `<div class="details-total-row"><span>🧱 إجمالي الخامات</span><span class="details-total-val">${matTotal.toLocaleString('ar-EG-u-nu-latn')} ج</span></div>` : ''}
+      ${labTotal ? `<div class="details-total-row"><span>⚙️ إجمالي المصنعيات</span><span class="details-total-val" style="color:#7c3aed;">${labTotal.toLocaleString('ar-EG-u-nu-latn')} ج</span></div>` : ''}
+      <div class="details-total-row">
+        <span>💰 الإجمالي الكلي</span>
+        <span class="details-total-val" style="font-size:17px;">${grandTotal.toLocaleString('ar-EG-u-nu-latn')} ج</span>
+      </div>`;
+  };
+  window._detailsSave = async function(type, id) {
+    const apply = overlay.querySelector('#detailsApplyToggle')?.checked || false;
+    const item2 = (currentProjectData[type]||[]).find(x=>x.id===id);
+    if(!item2) return;
+    item2.subDetails = subs;
+    item2.subDetailsApply = apply;
+    // لو مفعّل: نحدّث سعر البند بالإجمالي الكلي
+    if(apply && subs.length > 0) {
+      const grandTotal = getGrandTotal();
+      item2.cost = grandTotal;
+    }
+    await saveCurrentProject();
+    document.getElementById('itemDetailsModal')?.remove();
+    renderItemsTab(document.getElementById('dashBody'), type);
+    toast(apply ? '✓ تم الحفظ والتطبيق على سعر البند' : '✓ تم الحفظ — التفاصيل للعرض فقط', 'success');
+  };
+
+  // إغلاق عند النقر خارج
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+  renderModal();
+};
+
 window.updItem = (type, id, key, val) => {
   const item = (currentProjectData[type]||[]).find(x => x.id === id);
   if(!item) return;
-  item[key] = key==='name' ? val : Number(val);
+  const strKeys = ['name','contractor','costMode','contractDate','deliveryDate'];
+  item[key] = strKeys.includes(key) ? val : Number(val);
   saveCurrentProject();
 };
 
 window.delItem = async (type, id) => {
+  // فك ربط أي مقاول في الطاقم
+  const item = (currentProjectData[type]||[]).find(x => x.id === id);
+  if(item) {
+    (currentProjectData.crew||[]).forEach(c => {
+      if(c.linkedItemId === id || c.linkedItemName === item.name) {
+        c.linkedItemId = null; c.linkedItemName = '';
+      }
+    });
+  }
   currentProjectData[type] = (currentProjectData[type]||[]).filter(x => x.id !== id);
   await saveCurrentProject();
   renderItemsTab(document.getElementById('dashBody'), type);
@@ -3532,10 +4000,24 @@ window.delItem = async (type, id) => {
 window.addItem = async (type) => {
   const arr = currentProjectData[type] || [];
   const newId = 'i' + Date.now();
-  arr.push({id:newId, name:'بند جديد', cost:0, paid:0});
+  // يدوي افتراضياً عند الإضافة اليدوية
+  arr.push({id:newId, name:'بند جديد', cost:0, paid:0, costMode:'manual'});
   currentProjectData[type] = arr;
   await saveCurrentProject();
   renderItemsTab(document.getElementById('dashBody'), type);
+};
+
+// تبديل وضع تكلفة البند: hasrat ↔ manual
+window.toggleItemCostMode = async (type, id) => {
+  const item = (currentProjectData[type]||[]).find(x => x.id === id);
+  if(!item) return;
+  const wasManual = item.costMode === 'manual';
+  item.costMode = wasManual ? 'hasrat' : 'manual';
+  await saveCurrentProject();
+  renderItemsTab(document.getElementById('dashBody'), type);
+  toast(wasManual
+    ? '🧮 وضع الحصر — الخامات + مصنعية الطاقم'
+    : '📝 وضع يدوي — التكلفة المُدخلة هي الإجمالي');
 };
 
 // ── SPACES TAB ──
@@ -3549,104 +4031,255 @@ window.autofillItemsFromHasrat = async function() {
   const p = currentProjectData;
   if(!p) return;
 
-  // Default finish items with contractor names
-  const defaultFinishItems = [
-    { name: 'نقاشة', contractor: 'مقاول نقاشة' },
-    { name: 'سيراميك وبورسلين', contractor: 'مقاول سيراميك' },
-    { name: 'سباكة', contractor: 'مقاول سباكة' },
-    { name: 'كهرباء', contractor: 'مقاول كهرباء' },
-    { name: 'محارة وجبس', contractor: 'مقاول محارة' },
-    { name: 'نجارة أبواب', contractor: 'مقاول نجارة' },
-    { name: 'ألومنيوم وزجاج', contractor: 'مقاول ألومنيوم' },
-    { name: 'تكييف', contractor: 'مقاول تكييف' },
-    { name: 'مطبخ', contractor: 'مقاول مطبخ' },
-    { name: 'رخام', contractor: 'مقاول رخام' },
+  // ══════════════════════════════════════════════════════
+  // القاعدة:
+  //   خامات كل بند  → p.finish[x].cost  (costMode='hasrat')
+  //   مصنعية المقاول → p.crew[c].labor   (مرتبط بالبند باسمه)
+  //   getItemTotalCost = cost + labor  (بدون ازدواج)
+  // ══════════════════════════════════════════════════════
+
+  const sp = (typeof getHasratSpecs === 'function') ? getHasratSpecs() : {};
+  const spaces = p.spaces || [];
+  const totalFloor = spaces.reduce((s,sp2) => s + ((sp2.length||0)/100*(sp2.width||0)/100), 0);
+  const totalWall  = totalFloor * 3.5;
+  const paintArea  = totalWall;
+  const ceilingArea = totalFloor;
+  const wetSpaces  = spaces.filter(s => s.type==='bathroom'||s.type==='kitchen').length || 1;
+  const acSpaces   = spaces.filter(s => s.type==='room'||s.type==='reception').length || 2;
+
+  // ── تعريف البنود: اسم / خامات / مصنعية / اسم المقاول ──
+  const ITEMS = [
+    {
+      name:         'نقاشة',
+      contractor:   'مقاول نقاشة',
+      materials:    Math.round(paintTotal_cache || totalWall * 45 + totalFloor * 30),
+      labor:        Math.round((paintArea + ceilingArea) * (sp.laborPaintPerM2 || 95)),
+    },
+    {
+      name:         'محارة وجبس',
+      contractor:   'مقاول محارة',
+      materials:    Math.round(plasterTotal_cache || totalWall * 35),
+      labor:        Math.round(totalWall * (sp.laborPlasterPerM2 || 65)),
+    },
+    {
+      name:         'سيراميك وبورسلين',
+      contractor:   'مقاول سيراميك',
+      materials:    Math.round(ceramicMat_cache || totalFloor * (sp.priceCeramic60x60 || 260)),
+      labor:        Math.round(totalFloor * (sp.laborCeramic60x60 || sp.laborCeramicPerM2 || 110)),
+    },
+    {
+      name:         'كهرباء',
+      contractor:   'مقاول كهرباء',
+      materials:    Math.round(elecMat_cache || totalFloor * 150),
+      labor:        Math.round(sp.laborElectricalPerApartment || 8000),
+    },
+    {
+      name:         'سباكة',
+      contractor:   'مقاول سباكة',
+      materials:    Math.round(plumbMat_cache || wetSpaces * 1500),
+      labor:        Math.round(wetSpaces * (sp.laborPlumberPerWetSpace || 4000)),
+    },
+    {
+      name:         'نجارة أبواب',
+      contractor:   'مقاول نجارة',
+      materials:    0,
+      labor:        Math.round(spaces.length * 2500),
+    },
+    {
+      name:         'ألومنيوم وزجاج',
+      contractor:   'مقاول ألومنيوم',
+      materials:    Math.round(totalFloor * 80),
+      labor:        Math.round(totalFloor * 40),
+    },
+    {
+      name:         'تكييف',
+      contractor:   'مقاول تكييف',
+      materials:    0,
+      labor:        Math.round(acSpaces * (sp.laborACDrainPerUnit || 1500) + acSpaces * 500),
+    },
+    {
+      name:         'مطبخ',
+      contractor:   'مقاول مطبخ',
+      materials:    Math.round(totalFloor * 200),
+      labor:        Math.round(totalFloor * 100),
+    },
+    {
+      name:         'رخام',
+      contractor:   'مقاول رخام',
+      materials:    Math.round(totalFloor * 0.15 * (sp.priceMarbleEgyptianM || 1500)),
+      labor:        Math.round(totalFloor * 0.15 * 200),
+    },
   ];
 
-  // Try to pull prices from hasrat results if available
-  const sp = getHasratSpecs ? getHasratSpecs() : {};
+  // ── 1. إضافة / تحديث البنود (خامات فقط) ──
+  if(!p.finish) p.finish = [];
+  let addedItems = 0, updatedItems = 0;
 
-  // Build price estimates from hasrat specs
-  function estimateFromHasrat(name) {
-    const spaces = p.spaces || [];
-    const totalFloor = spaces.reduce((s, sp2) => s + ((sp2.length||0)/100*(sp2.width||0)/100), 0);
-    const totalWall = totalFloor * 3.5;
-    switch(name) {
-      case 'نقاشة':
-        return Math.round((totalWall * (sp.laborPaintPerM2||95) + totalFloor * 30));
-      case 'سيراميك وبورسلين':
-        return Math.round(totalFloor * ((sp.priceCeramic60x60||260) + (sp.laborCeramic60x60||110)));
-      case 'سباكة':
-        return Math.round((spaces.filter(s=>s.type==='bathroom'||s.type==='kitchen').length || 2) * (sp.laborPlumberPerWetSpace||4000));
-      case 'كهرباء':
-        return Math.round(totalFloor * 150 + (sp.laborElectricalPerApartment||8000));
-      case 'محارة وجبس':
-        return Math.round(totalWall * (sp.laborPlasterPerM2||65));
-      case 'نجارة أبواب':
-        return Math.round((spaces.length || 4) * 4500);
-      case 'ألومنيوم وزجاج':
-        return Math.round(totalFloor * 120);
-      case 'تكييف':
-        return Math.round((spaces.filter(s=>s.type==='room'||s.type==='reception').length || 3) * 8000);
-      case 'مطبخ':
-        return Math.round((p.meta?.totalArea || totalFloor) * 300);
-      case 'رخام':
-        return Math.round(totalFloor * 0.15 * (sp.priceMarbleEgyptianM||1500));
-      default:
-        return 0;
-    }
-  }
-
-  // Build finish items
-  const existing = p.finish || [];
-  const existingNames = existing.map(x => x.name);
-  let added = 0;
-
-  defaultFinishItems.forEach(item => {
-    if(!existingNames.includes(item.name)) {
-      const price = estimateFromHasrat(item.name);
-      const newId = 'af_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
-      existing.push({
-        id: newId,
-        name: item.name,
-        cost: price,
-        paid: 0,
-        contractor: item.contractor,
+  ITEMS.forEach(def => {
+    const existing = p.finish.find(x => x.name === def.name);
+    if(!existing) {
+      p.finish.push({
+        id:           'af_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        name:         def.name,
+        cost:         def.materials,   // خامات فقط
+        costMode:     'hasrat',        // المصنعية من الطاقم
+        paid:         0,
+        contractor:   def.contractor,
         contractDate: '',
         deliveryDate: ''
       });
-      added++;
+      addedItems++;
+    } else {
+      // حدّث الخامات بس لو البند بوضع حصر
+      if(existing.costMode !== 'manual') {
+        existing.cost     = def.materials;
+        existing.costMode = 'hasrat';
+        updatedItems++;
+      }
     }
   });
-  p.finish = existing;
 
-  // Build crew entries from contractors
+  // ── 2. إضافة / تحديث الطاقم (مصنعية فقط) ──
   if(!p.crew) p.crew = [];
-  const existingCrewNames = p.crew.map(c => c.contractorName);
+  let addedCrew = 0, updatedCrew = 0;
 
-  defaultFinishItems.forEach((item, idx) => {
-    if(!existingCrewNames.includes(item.contractor)) {
-      // Find the matching finish item
-      const finishItem = p.finish.find(x => x.name === item.name);
-      // ⚠️ labor = 0 عشان متضاعفش مع x.cost في البند
-      // التكلفة المُدخلة في البند تشمل الخامات والمصنعية — المقاول هنا لتسجيل الدفعات فقط
+  ITEMS.forEach((def, idx) => {
+    const finishItem = p.finish.find(x => x.name === def.name);
+    const existingCrew = p.crew.find(c => c.contractorName === def.contractor || c.linkedItemName === def.name);
+
+    if(!existingCrew) {
       p.crew.push({
-        contractorName: item.contractor,
-        item: item.name,
-        contractDate: '',
-        deliveryDate: '',
-        labor: 0,
-        payments: [],
-        linkedItemId: finishItem?.id || null,
-        linkedItemName: item.name,
-        createdAt: Date.now() + idx
+        contractorName: def.contractor,
+        item:           def.name,
+        workType:       'finish',
+        linkedItemId:   finishItem?.id || null,
+        linkedItemName: def.name,
+        labor:          def.labor,     // مصنعية فقط
+        payments:       [],
+        contractDate:   '',
+        deliveryDate:   '',
+        createdAt:      Date.now() + idx
       });
-
+      addedCrew++;
+    } else {
+      // حدّث المصنعية وتأكد من الربط
+      existingCrew.labor          = def.labor;
+      existingCrew.linkedItemId   = finishItem?.id || existingCrew.linkedItemId;
+      existingCrew.linkedItemName = def.name;
+      existingCrew.workType       = 'finish';
+      updatedCrew++;
     }
   });
 
   await saveCurrentProject();
-  toast('✅ تم نقل البنود — تكلفة البند تشمل الإجمالي، ومصنعية الطاقم = 0 لتجنب الازدواج. عدّل حسب احتياجك.', 'success');
+
+  toast(
+    `✅ الحصر مُعتمد — بنود: ${addedItems} جديد / ${updatedItems} محدّث | طاقم: ${addedCrew} جديد / ${updatedCrew} محدّث\n` +
+    `• البنود = خامات فقط  •  الطاقم = مصنعية فقط  •  الإجمالي = الاثنان معاً`,
+    'success'
+  );
+  switchTab('finish');
+};
+
+// متغيرات cache لنتائج الحصر — تُملأ من runHasrat
+let paintTotal_cache   = 0;
+let plasterTotal_cache = 0;
+let ceramicMat_cache   = 0;
+let elecMat_cache      = 0;
+let plumbMat_cache     = 0;
+
+// ══════════════════════════════════════════════════════════
+// applyHasratToProject — يستقبل أرقاماً حقيقية من runHasrat
+// خامات → p.finish[x].cost   |   مصنعية → p.crew[c].labor
+// ══════════════════════════════════════════════════════════
+window.applyHasratToProject = async function(
+  matPaint, matPlaster, matCeramic, matElec, matPlumb,
+  labPaint, labPlaster, labCeramic, labElec, labPlumb
+) {
+  const p = currentProjectData;
+  if(!p) return;
+
+  // جدول البنود: اسم — خامات — مقاول — مصنعية
+  const DEFS = [
+    { name:'نقاشة',            contractor:'مقاول نقاشة',    mat: matPaint,   lab: labPaint   },
+    { name:'محارة وجبس',       contractor:'مقاول محارة',     mat: matPlaster, lab: labPlaster },
+    { name:'سيراميك وبورسلين', contractor:'مقاول سيراميك',   mat: matCeramic, lab: labCeramic },
+    { name:'كهرباء',            contractor:'مقاول كهرباء',    mat: matElec,    lab: labElec    },
+    { name:'سباكة',             contractor:'مقاول سباكة',     mat: matPlumb,   lab: labPlumb   },
+    // بنود بدون حصر مباشر — تُضاف بصفر وتُعدَّل يدوياً
+    { name:'نجارة أبواب',      contractor:'مقاول نجارة',     mat: 0, lab: 0 },
+    { name:'ألومنيوم وزجاج',   contractor:'مقاول ألومنيوم',  mat: 0, lab: 0 },
+    { name:'تكييف',             contractor:'مقاول تكييف',     mat: 0, lab: 0 },
+    { name:'مطبخ',              contractor:'مقاول مطبخ',      mat: 0, lab: 0 },
+    { name:'رخام',              contractor:'مقاول رخام',      mat: 0, lab: 0 },
+  ];
+
+  if(!p.finish) p.finish = [];
+  if(!p.crew)   p.crew   = [];
+
+  let statsItems = {added:0, updated:0};
+  let statsCrew  = {added:0, updated:0};
+
+  DEFS.forEach((def, idx) => {
+    // ── البند (خامات) ──
+    let finishItem = p.finish.find(x => x.name === def.name);
+    if(!finishItem) {
+      finishItem = {
+        id:           'hs_' + Date.now() + '_' + Math.random().toString(36).slice(2,5),
+        name:         def.name,
+        cost:         Math.round(def.mat),
+        costMode:     'hasrat',
+        paid:         0,
+        contractor:   def.contractor,
+        contractDate: '',
+        deliveryDate: ''
+      };
+      p.finish.push(finishItem);
+      statsItems.added++;
+    } else if(finishItem.costMode !== 'manual') {
+      finishItem.cost     = Math.round(def.mat);
+      finishItem.costMode = 'hasrat';
+      statsItems.updated++;
+    }
+
+    // ── الطاقم (مصنعية) ──
+    let crewMember = p.crew.find(c =>
+      c.contractorName === def.contractor || c.linkedItemName === def.name
+    );
+    if(!crewMember) {
+      p.crew.push({
+        contractorName: def.contractor,
+        item:           def.name,
+        workType:       'finish',
+        linkedItemId:   finishItem.id,
+        linkedItemName: def.name,
+        labor:          Math.round(def.lab),
+        payments:       [],
+        contractDate:   '',
+        deliveryDate:   '',
+        createdAt:      Date.now() + idx
+      });
+      statsCrew.added++;
+    } else {
+      crewMember.labor          = Math.round(def.lab);
+      crewMember.linkedItemId   = finishItem.id;
+      crewMember.linkedItemName = def.name;
+      crewMember.workType       = 'finish';
+      statsCrew.updated++;
+    }
+  });
+
+  await saveCurrentProject();
+
+  toast(
+    `✅ تم اعتماد الحصر!
+` +
+    `📦 بنود: ${statsItems.added} جديد، ${statsItems.updated} محدَّث | ` +
+    `👷 طاقم: ${statsCrew.added} جديد، ${statsCrew.updated} محدَّث
+` +
+    `البنود = خامات فقط — الطاقم = مصنعية فقط — الإجمالي = الجمع تلقائياً`,
+    'success'
+  );
   switchTab('finish');
 };
 
@@ -5557,6 +6190,16 @@ window.runHasrat = function() {
 
   const grand = materialsTotal + laborTotal + doorsWindowsTotal;
 
+  // ── تحديث cache للاستخدام في autofillItemsFromHasrat ──
+  if(typeof paintTotal_cache !== 'undefined') {
+    paintTotal_cache   = paintTotal;
+    plasterTotal_cache = plasterTotal;
+    ceramicMat_cache   = tileFloorCost + tileWallCost + ceramicBeddingTotal;
+    elecMat_cache      = electricalMaterialsCost + lightingMaterialsCost;
+    plumbMat_cache     = plumbingMaterialsCost + plumbingFinishingCost;
+  }
+
+
   const floorBreakdownRows = Object.values(floorBreakdown).map(x => `<div class="hasrat-result-row"><span class="hasrat-result-label">${x.label}</span><span class="hasrat-result-val">${fmtN_h(x.area)} م²${isAdminHasrat ? ` — توريد ${fmtN_h(x.supplyArea)} م² — خامة ${fmtH(x.materialCost)} ج.م — مصنعية ${fmtH(x.laborCost)} ج.م` : ''}</span></div>`).join('');
   const wallBreakdownRows = Object.values(wallBreakdown).map(x => `<div class="hasrat-result-row"><span class="hasrat-result-label">${x.label}</span><span class="hasrat-result-val">${fmtN_h(x.area)} م²${isAdminHasrat ? ` — توريد ${fmtN_h(x.supplyArea)} م² — خامة ${fmtH(x.materialCost)} ج.م — مصنعية ${fmtH(x.laborCost)} ج.م` : ''}</span></div>`).join('');
 
@@ -5986,6 +6629,33 @@ window.runHasrat = function() {
         <span>مصنعيات: ${fmtH(laborTotal)} ج.م</span>
       </div>
 
+      ${isAdminHasrat ? `
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(201,168,76,0.04));border:1.5px solid rgba(201,168,76,0.35);border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:900;color:var(--gold);margin-bottom:8px;">⚡ اعتماد نتائج الحصر على المشروع</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7;">
+          <span style="display:inline-block;background:rgba(5,150,105,0.1);color:#059669;border-radius:4px;padding:2px 8px;font-weight:700;margin-bottom:4px;">📦 خامات كل بند → تاب التشطيبات</span>
+          <br>
+          <span style="display:inline-block;background:rgba(201,168,76,0.1);color:var(--gold);border-radius:4px;padding:2px 8px;font-weight:700;">🔨 مصنعية كل مقاول → تاب الطاقم</span>
+          <br><br>
+          الإجمالي في التشطيبات = الخامات + المصنعية تلقائياً — بدون ازدواج.
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:var(--text2);margin-bottom:14px;background:var(--cream2);border-radius:8px;padding:10px 12px;">
+          <div>📦 نقاشة — خامات: <strong>${fmtH(paintTotal)}</strong></div>
+          <div>🔨 مصنعية نقاشة: <strong>${fmtH(laborPaint)}</strong></div>
+          <div>📦 محارة — خامات: <strong>${fmtH(plasterTotal)}</strong></div>
+          <div>🔨 مصنعية محارة: <strong>${fmtH(laborPlaster)}</strong></div>
+          <div>📦 سيراميك — خامات: <strong>${fmtH(tileFloorCost+tileWallCost)}</strong></div>
+          <div>🔨 مصنعية سيراميك: <strong>${fmtH(laborCeramic)}</strong></div>
+          <div>📦 كهرباء — خامات: <strong>${fmtH(electricalMaterialsCost+lightingMaterialsCost)}</strong></div>
+          <div>🔨 مصنعية كهرباء: <strong>${fmtH(laborElectrical)}</strong></div>
+          <div>📦 سباكة — خامات: <strong>${fmtH(plumbingMaterialsCost+plumbingFinishingCost)}</strong></div>
+          <div>🔨 مصنعية سباكة: <strong>${fmtH(laborPlumber+laborACDrain)}</strong></div>
+        </div>
+        <button onclick="applyHasratToProject(${paintTotal},${plasterTotal},${tileFloorCost+tileWallCost+ceramicBeddingTotal},${electricalMaterialsCost+lightingMaterialsCost},${plumbingMaterialsCost+plumbingFinishingCost},${laborPaint},${laborPlaster},${laborCeramic},${laborElectrical},${laborPlumber+laborACDrain})"
+          style="width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:#fff;border:none;border-radius:8px;font-family:Cairo;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(201,168,76,0.3);">
+          ✅ اعتماد الحصر وتوزيعه على البنود والطاقم
+        </button>
+      </div>` : ''}
       <button class="hasrat-print-btn" onclick="printHasrat()">🖨️ طباعة / PDF</button>
     </div>` : ''}
   `;
@@ -7067,6 +7737,7 @@ function renderInfoTab(body) {
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <button onclick="sendWhatsappReport()" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:Cairo;font-size:13px;font-weight:700;cursor:pointer;">📲 إرسال تقرير على واتساب</button>
+      <button onclick="duplicateProject()" style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);color:#2563eb;padding:10px 20px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;">📋 نسخ المشروع</button>
       <button class="btn-sm" style="background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2);color:#dc2626;padding:10px 20px;border-radius:8px;font-family:Cairo;font-weight:700;" onclick="deleteProject()">🗑️ حذف المشروع</button>
     </div>
   `;
@@ -7121,6 +7792,119 @@ window.deleteProject = async () => {
     currentProjectId = null; currentProjectData = null;
     showAdminDashboard();
   } catch(e) { toast('خطأ في الحذف','error'); }
+};
+
+// زر نسخ سريع من الـ grid (بدون فتح المشروع)
+window.quickDuplicateProject = async (projectId) => {
+  try {
+    const snap = await fb.getDoc(fb.doc(fb.db, 'projects', projectId));
+    if(!snap.exists()) { toast('المشروع غير موجود','error'); return; }
+    const p = snap.data();
+    const originalName = p.meta?.name || 'مشروع';
+    const newName = prompt('اسم النسخة الجديدة:', 'نسخة — ' + originalName);
+    if(!newName || !newName.trim()) return;
+
+    const clone = JSON.parse(JSON.stringify(p));
+    clone.meta = { ...(clone.meta||{}), name: newName.trim(), progress:0, clientPaid:0, createdAt: Date.now(), duplicatedFromId: projectId, duplicatedFromName: originalName };
+
+    const newId = () => 'dup_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+    const idMap = {};
+    ['finish','furn'].forEach(type => {
+      (clone[type]||[]).forEach(item => {
+        const oid = item.id; item.id = newId();
+        if(oid) idMap[oid] = item.id;
+        item.paid = 0;
+      });
+    });
+    (clone.crew||[]).forEach(c => {
+      if(c.linkedItemId && idMap[c.linkedItemId]) c.linkedItemId = idMap[c.linkedItemId];
+      c.payments = []; c.createdAt = Date.now();
+    });
+    (clone.spaces||[]).forEach(sp => {
+      (sp.openings||[]).forEach(op => { op.id = newId(); });
+    });
+    delete clone.pendingCrewRequests;
+    clone.gallery = [];
+
+    await fb.addDoc(fb.collection(fb.db,'projects'), clone);
+    toast('✅ تم إنشاء نسخة: "' + newName.trim() + '"', 'success');
+    showAdminDashboard();
+  } catch(e) {
+    console.error(e);
+    toast('خطأ: ' + e.message, 'error');
+  }
+};
+
+// ══════════════════════════════════════
+// DUPLICATE PROJECT — نسخ مشروع كامل
+// ══════════════════════════════════════
+window.duplicateProject = async () => {
+  const p = currentProjectData;
+  if(!p) return;
+
+  const originalName = p.meta?.name || 'مشروع';
+  const newName = prompt('اسم المشروع الجديد (النسخة):', 'نسخة — ' + originalName);
+  if(!newName || !newName.trim()) return;
+
+  // deep clone بدون id
+  const clone = JSON.parse(JSON.stringify(p));
+
+  // تعديل الميتا
+  clone.meta = { ...(clone.meta || {}), name: newName.trim(), progress: 0, clientPaid: 0, createdAt: Date.now(), duplicatedFromId: currentProjectId, duplicatedFromName: originalName };
+
+  // إعادة توليد IDs لكل العناصر عشان ما يحصلش تعارض
+  const newId = () => 'dup_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+
+  // إعادة ID البنود وتحديث روابط الطاقم
+  const idMap = {};  // oldId → newId
+
+  ['finish','furn'].forEach(type => {
+    (clone[type] || []).forEach(item => {
+      const oldId = item.id;
+      item.id = newId();
+      if(oldId) idMap[oldId] = item.id;
+      item.paid = 0;  // نبدأ بصفر مدفوع
+    });
+  });
+
+  // تحديث linkedItemId في الطاقم
+  (clone.crew || []).forEach(c => {
+    if(c.linkedItemId && idMap[c.linkedItemId]) {
+      c.linkedItemId = idMap[c.linkedItemId];
+    }
+    c.payments = [];  // نبدأ بسجل دفعات نظيف
+    c.createdAt = Date.now();
+  });
+
+  // تنظيف بيانات الدفعات والفواتير
+  (clone.spaces || []).forEach(sp => {
+    (sp.openings || []).forEach(op => {
+      const oldOpId = op.id;
+      op.id = newId();
+      if(oldOpId) idMap[oldOpId] = op.id;
+    });
+  });
+
+  // الباب المصفح — نحتفظ بالمواصفات بس نصفّر السعر لو محتاج
+  if(clone.armoredDoor) clone.armoredDoor = { ...clone.armoredDoor };
+
+  // حذف بيانات لا تنتقل للنسخة
+  delete clone.pendingCrewRequests;
+  delete clone.gallery;
+  clone.gallery = [];
+
+  try {
+    const ref = await fb.addDoc(fb.collection(fb.db, 'projects'), clone);
+    toast('✅ تم إنشاء نسخة: "' + newName.trim() + '"', 'success');
+
+    // فتح المشروع الجديد مباشرة
+    currentProjectId = ref.id;
+    currentProjectData = clone;
+    await openAdminProject(ref.id, clone);
+  } catch(e) {
+    console.error(e);
+    toast('خطأ في النسخ: ' + e.message, 'error');
+  }
 };
 
 // ══════════════════════════════════════
@@ -8292,16 +9076,47 @@ window.goBackToProjects = function() {
 // ══════════════════════════════════════
 
 
+// ═══════════════════════════════════════════════════
+// منطق التكلفة — القاعدة الأساسية:
+//
+//  costMode = 'hasrat'  (افتراضي — الحصر):
+//    • x.cost = خامات فقط (من الحصر)
+//    • إجمالي البند = x.cost + مصنعية الطاقم المرتبط
+//    • المصنعية تُقرأ من crew.labor وتُعرض منفصلة
+//
+//  costMode = 'manual'  (يدوي):
+//    • x.cost = الإجمالي الكامل (أدخله المستخدم)
+//    • إجمالي البند = x.cost فقط
+//    • الطاقم يُتجاهل في الحساب — لتسجيل الدفعات فقط
+// ═══════════════════════════════════════════════════
+
+function isItemManual(item) {
+  return item?.costMode === 'manual';
+}
+
 function getLinkedCrewLabor(type, item, index) {
+  if(isItemManual(item)) return 0;
   const crew = currentProjectData?.crew || [];
   return crew.reduce((sum,c)=>{
     const sameType = (c.workType || 'finish') === type;
-    const matches = String(c.linkedItemId ?? '') === String(index) || (item?.id && String(c.linkedItemId ?? '') === String(item.id)) || (c.linkedItemName && item?.name && c.linkedItemName === item.name);
+    const matches = String(c.linkedItemId ?? '') === String(index)
+      || (item?.id && String(c.linkedItemId ?? '') === String(item.id))
+      || (c.linkedItemName && item?.name && c.linkedItemName === item.name);
     return sameType && matches ? sum + (Number(c.labor)||0) : sum;
   }, 0);
 }
+
 function getItemTotalCost(type, item, index) {
+  if(isItemManual(item)) return Number(item?.cost)||0;
   return (Number(item?.cost)||0) + getLinkedCrewLabor(type, item, index);
+}
+
+function getItemCostBreakdown(type, item, index) {
+  const manual = isItemManual(item);
+  const materials = Number(item?.cost)||0;
+  const labor = manual ? 0 : getLinkedCrewLabor(type, item, index);
+  const total = manual ? materials : materials + labor;
+  return { materials, labor, total, manual };
 }
 
 function getCrewLinkedWorkItem(crewMember) {
@@ -8393,7 +9208,8 @@ function renderCrewTab(body) {
             <div style="font-size:13px;font-weight:700;">${fmtDate(c.deliveryDate)}</div>
           </div>
           <div style="background:rgba(201,168,76,0.08);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(201,168,76,0.2);">
-            <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">المصنعية الكلية</div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">🔨 مصنعية البند</div>
+            ${c.linkedItemName ? `<div style="font-size:9px;color:var(--gold);margin-bottom:4px;font-weight:700;">${c.linkedItemName}</div>` : ''}
             <div style="font-size:14px;font-weight:900;color:var(--gold);">${fmt(c.labor||0)}</div>
           </div>
           <div style="background:rgba(5,150,105,0.08);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(5,150,105,0.2);">
@@ -8493,7 +9309,14 @@ function openAddCrewModal(editIdx = null) {
         <div class="form-g"><label>تاريخ التعاقد</label><input type="date" id="crew-contract" value="${c.contractDate||''}"></div>
         <div class="form-g"><label>تاريخ التسليم</label><input type="date" id="crew-delivery" value="${c.deliveryDate||''}"></div>
       </div>
-      <div class="form-g"><label>المصنعية الكلية (جنيه)</label><input type="number" id="crew-labor" value="${c.labor||''}" placeholder="0"></div>
+      <div class="form-g" style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px 14px;margin-top:4px;">
+        <label style="color:var(--gold);font-weight:900;">🔨 مصنعية المقاول على هذا البند (جنيه)</label>
+        <input type="number" id="crew-labor" value="${c.labor||''}" placeholder="0" style="margin-top:6px;">
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.6;">
+          هذا المبلغ يُضاف تلقائياً لإجمالي البند المرتبط في تاب التشطيبات.<br>
+          البند = <strong style="color:#059669;">خامات</strong> + <strong style="color:var(--gold);">مصنعية الطاقم</strong> = الإجمالي (بدون ازدواج)
+        </div>
+      </div>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="document.getElementById('crewModal').remove()">إلغاء</button>
         <button class="btn-confirm" onclick="${isEdit?`saveEditCrew(${editIdx})`:'saveNewCrew()'}">حفظ ✓</button>
