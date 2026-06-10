@@ -56,7 +56,6 @@
     ref, uploadBytes, getDownloadURL, deleteObject 
   };
   
-  console.log("Firebase جاهز يا هندسة!");
   window.dispatchEvent(new Event('firebase-ready'));
   
 </script>
@@ -280,10 +279,10 @@ body{background:var(--cream)!important;}
   box-shadow:0 8px 28px rgba(201,168,76,0.10);
 }
 .whatsapp-contact-btn{
-  background:linear-gradient(135deg,#6f7f3f,#2f5d3a)!important;
-  border-color:rgba(255,255,255,0.14)!important;
+  background:linear-gradient(135deg,rgba(111,127,63,0.15),rgba(47,93,58,0.10))!important;
+  border-color:rgba(120,180,80,0.35)!important;
   color:#fff!important;
-  box-shadow:0 8px 28px rgba(47,93,58,0.28);
+  box-shadow:0 0 0 1px rgba(120,180,80,0.08) inset, 0 4px 20px rgba(47,93,58,0.08)!important;
 }
 .whatsapp-contact-btn:hover{filter:brightness(1.05);transform:translateY(-2px);}
 
@@ -309,10 +308,42 @@ body{background:var(--cream)!important;}
 .hero-login-wrap{display:flex;justify-content:center;margin:0 0 14px;}
 .hero-login-btn{min-width:190px;text-align:center;}
 .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
-.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:#fff;padding:14px 32px;border-radius:40px;font-size:15px;font-weight:700;border:none;transition:all .25s;box-shadow:var(--shadow-gold);}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,168,76,0.35);}
-.btn-ghost{background:transparent;color:#fff;padding:14px 32px;border-radius:40px;font-size:15px;font-weight:700;border:1px solid rgba(255,255,255,0.25);transition:all .25s;}
-.btn-ghost:hover{border-color:var(--gold);color:var(--gold-lt);}
+
+.btn-primary{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(201,168,76,0.15) 0%,rgba(138,100,32,0.10) 100%);
+  color:#fff;padding:14px 32px;border-radius:40px;font-size:15px;font-weight:700;
+  border:1px solid rgba(201,168,76,0.40);
+  transition:all .25s;
+  box-shadow:0 0 0 1px rgba(201,168,76,0.08) inset, 0 4px 24px rgba(201,168,76,0.08);
+}
+.btn-primary::before{
+  content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+  transform:skewX(-20deg);
+  transition:left .5s ease;
+  pointer-events:none;
+}
+.btn-primary:hover::before{left:130%;}
+.btn-primary:hover{transform:translateY(-2px);border-color:rgba(201,168,76,0.65);box-shadow:0 0 0 1px rgba(201,168,76,0.15) inset,0 8px 28px rgba(201,168,76,0.18);}
+
+.btn-ghost{
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+  color:#fff;padding:14px 32px;border-radius:40px;font-size:15px;font-weight:700;
+  border:1px solid rgba(255,255,255,0.20);
+  transition:all .25s;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+.btn-ghost::before{
+  content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.10),transparent);
+  transform:skewX(-20deg);
+  transition:left .5s ease;
+  pointer-events:none;
+}
+.btn-ghost:hover::before{left:130%;}
+.btn-ghost:hover{border-color:rgba(201,168,76,0.50);color:var(--gold-lt);background:rgba(201,168,76,0.06);}
 .hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);text-align:center;color:rgba(255,255,255,0.4);font-size:12px;font-weight:600;letter-spacing:2px;}
 .hero-scroll-dot{width:1px;height:48px;background:rgba(255,255,255,0.2);margin:10px auto 0;position:relative;overflow:hidden;}
 .hero-scroll-dot::after{content:'';position:absolute;top:-100%;width:100%;height:50%;background:var(--gold);animation:scrollDot 1.8s ease-in-out infinite;}
@@ -2160,6 +2191,7 @@ async function tryAutoLogin() {
           currentRole = 'client'; currentProjectId = d.id; currentProjectData = p;
           setNavUser('عميل', p.meta.clientName||'العميل');
           await showClientProject(d.id, p);
+          logActivity('auto_login', { method: 'client_saved', projectName: p.meta?.name });
           return;
         }
       }
@@ -2182,6 +2214,7 @@ async function tryAutoLogin() {
           currentEngineer = {id: d.id, ...eng};
           setNavUser('Engineer', eng.name||username);
           await showEngineerDashboard(eng);
+          logActivity('auto_login', { method: 'engineer_saved', username });
           return;
         }
       }
@@ -2266,6 +2299,7 @@ async function loginAdmin() {
     closeModal('loginModal');
     setNavUser('Admin', email.split('@')[0]);
     await showAdminDashboard();
+    logActivity('login', { method: 'admin_email', email });
   } catch(e) {
     document.getElementById('loginError').style.display = 'block';
   }
@@ -2287,6 +2321,7 @@ async function loginClient() {
         setNavUser('عميل', p.meta.clientName||'العميل');
         await showClientProject(d.id, p);
         if(!alreadySaved) setTimeout(()=>toast('✓ تم حفظ الجهاز — سيدخل تلقائياً المرة القادمة','success'),400);
+        logActivity('login', { method: 'client_code', projectName: p.meta?.name });
         return;
       }
     }
@@ -2298,6 +2333,7 @@ async function loginClient() {
 }
 
 function doLogout() {
+  logActivity('logout', {});
   if(fb) fb.signOut(fb.auth);
   localStorage.removeItem(LS_CLIENT_KEY);
   localStorage.removeItem(LS_ENG_KEY);
@@ -2519,6 +2555,10 @@ function openAdminManagerModal() {
 
       <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;margin-bottom:8px;">⚙️ الإعدادات والتقارير</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+        <button onclick="document.getElementById('adminManagerModal').remove();openActivityLogModal()" style="display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--cream2);border:1px solid var(--cream3);border-radius:12px;cursor:pointer;font-family:Cairo;font-size:14px;font-weight:700;color:var(--text);text-align:right;transition:all .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
+          <span style="font-size:24px;">📋</span>
+          <div style="text-align:right;"><div>سجل النشاط</div><div style="font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;">شوف مين دخل امتى وعمل إيه</div></div>
+        </button>
         <button onclick="document.getElementById('adminManagerModal').remove();openCurrentProjectClientPerms()" style="display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--cream2);border:1px solid var(--cream3);border-radius:12px;cursor:pointer;font-family:Cairo;font-size:14px;font-weight:700;color:var(--text);text-align:right;transition:all .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
           <span style="font-size:24px;">👁️</span>
           <div style="text-align:right;"><div>Client Settings</div><div style="font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;">Control what the client sees in their panel</div></div>
@@ -4376,7 +4416,7 @@ function renderInvoiceItem(item, isAdmin) {
 
   const imgsHtml = invoices.map((inv, ii) => `
     <div class="inv-img-wrap" style="position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--cream3);flex-shrink:0;">
-      <img src="${inv.url}" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="openLightbox('${inv.url}')" title="${inv.note||''}">
+      <img src="${inv.url}" alt="صورة المشروع" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="openLightbox('${inv.url}')" title="${inv.note||''}">
       ${isAdmin ? `<button onclick="deleteInvoiceImg('${item._type}','${item.id}',${ii})" style="position:absolute;top:3px;left:3px;background:rgba(220,38,38,0.85);border:none;color:#fff;border-radius:4px;font-size:10px;padding:2px 5px;cursor:pointer;">✕</button>` : ''}
     </div>`).join('');
 
@@ -6727,6 +6767,7 @@ function enhanceHasratCollapsibles(){
 }
 
 window.printHasrat = function() {
+  logActivity('report_hasrat', { projectName: currentProjectData?.meta?.name });
 
   const p = currentProjectData;
   const content = document.getElementById('hasratResults').innerHTML;
@@ -7083,8 +7124,8 @@ window.openSpacesReport = () => {
 
   const typeLabels = {room:'غرفة', reception:'ريسبشن', bathroom:'حمام', kitchen:'مطبخ'};
   const logoSrc = document.querySelector('#navbar img')?.src || '';
-  const logoHtml = logoSrc ? `<img src="${logoSrc}" style="height:50px;width:auto;">` : `<div style="font-size:18px;font-weight:900;color:var(--gold);">مصطفى عفيفي</div>`;
-  const watermarkHtml = logoSrc ? `<div class="rpt-watermark"><img src="${logoSrc}"></div>` : '';
+  const logoHtml = logoSrc ? `<img src="${logoSrc}" alt="شعار الشركة" style="height:50px;width:auto;">` : `<div style="font-size:18px;font-weight:900;color:var(--gold);">مصطفى عفيفي</div>`;
+  const watermarkHtml = logoSrc ? `<div class="rpt-watermark"><img src="${logoSrc}" alt="شعار الشركة"></div>` : '';
 
   document.getElementById('reportBody').innerHTML = `
     ${watermarkHtml}
@@ -8013,6 +8054,8 @@ function openReport(type) {
   const p = currentProjectData;
   if(!p) { toast('لا يوجد مشروع مفتوح','error'); return; }
 
+  logActivity(isOffice ? 'report_office' : 'report_client', { projectName: p.meta?.name });
+
   // ── حسابات مشتركة ──
   let finishTotal=0, furnTotal=0, finishPaid=0, furnPaid=0;
   let finishCompletedCost=0, finishPartialCost=0, finishPendingCost=0;
@@ -8230,6 +8273,7 @@ function openWeeklyReport() {
   if(currentRole !== 'admin') { toast('غير متاح','error'); return; }
   const p = currentProjectData;
   if(!p) { toast('افتح مشروعاً أولاً','error'); return; }
+  logActivity('report_weekly', { projectName: p.meta?.name });
 
   const today = new Date();
   const weekAgo = new Date(today.getTime() - 7*24*60*60*1000);
@@ -8602,6 +8646,7 @@ async function loginEngineer() {
         setNavUser('Engineer', eng.name||username);
         await showEngineerDashboard(eng);
         if(!alreadySaved) setTimeout(()=>toast('✓ تم حفظ الجهاز — سيدخل تلقائياً المرة القادمة','success'),400);
+        logActivity('login', { method: 'engineer_credentials', username });
         return;
       }
     }
@@ -9619,6 +9664,166 @@ async function saveClientPermissions() {
   await saveCurrentProject();
   document.getElementById('clientPermsModal')?.remove();
   toast('✓ تم حفظ Client Settings','success');
+}
+
+// ══════════════════════════════════════
+// ACTIVITY LOG
+// ══════════════════════════════════════
+async function logActivity(action, details = {}) {
+  try {
+    if (!fb) return;
+    const now = new Date();
+    // Identify actor
+    let actorName = 'Unknown';
+    let actorRole = currentRole || 'unknown';
+    if (currentRole === 'admin') {
+      actorName = currentUser?.email?.split('@')[0] || 'Admin';
+    } else if (currentRole === 'engineer' && currentEngineer) {
+      actorName = currentEngineer.name || currentEngineer.username || 'Engineer';
+    } else if (currentRole === 'client' && currentProjectData) {
+      actorName = currentProjectData.meta?.clientName || 'Client';
+    }
+    const entry = {
+      action,
+      actorName,
+      actorRole,
+      projectId: currentProjectId || null,
+      projectName: currentProjectData?.meta?.name || details.projectName || null,
+      details,
+      timestamp: now.toISOString(),
+      ts: now.getTime(),
+      userAgent: navigator.userAgent.substring(0, 120),
+      device: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+    };
+    await fb.addDoc(fb.collection(fb.db, 'activity_log'), entry);
+  } catch (e) { /* silent — لا نوقف التطبيق بسبب اللوج */ }
+}
+
+// ── Open Activity Log Modal (Admin only) ──
+async function openActivityLogModal() {
+  document.getElementById('activityLogModal')?.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'activityLogModal';
+  modal.className = 'modal-overlay open';
+  modal.innerHTML = `
+    <div class="modal modal-wrapper" style="max-width:680px;max-height:88vh;overflow-y:auto;padding:28px 24px;">
+      <button class="modal-close" onclick="document.getElementById('activityLogModal').remove()">✕</button>
+      <div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px;">📋 سجل النشاط</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:18px;">جميع عمليات الدخول والأكشنز المهمة</div>
+
+      <!-- Filters -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+        <select id="alFilterRole" onchange="renderActivityLog()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--cream3);background:var(--cream2);font-family:Cairo;font-size:13px;color:var(--text);cursor:pointer;">
+          <option value="">كل الأدوار</option>
+          <option value="admin">Admin</option>
+          <option value="engineer">مهندس</option>
+          <option value="client">عميل</option>
+        </select>
+        <select id="alFilterAction" onchange="renderActivityLog()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--cream3);background:var(--cream2);font-family:Cairo;font-size:13px;color:var(--text);cursor:pointer;">
+          <option value="">كل الأكشنز</option>
+          <option value="login">دخول</option>
+          <option value="logout">خروج</option>
+          <option value="report">تقرير</option>
+          <option value="auto_login">دخول تلقائي</option>
+        </select>
+        <button onclick="clearActivityLog()" style="margin-right:auto;padding:7px 16px;border-radius:8px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);color:#dc2626;font-family:Cairo;font-size:12px;font-weight:700;cursor:pointer;">🗑 مسح السجل</button>
+      </div>
+
+      <div id="activityLogList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">⏳ جاري التحميل...</div>
+      </div>
+
+      <div style="margin-top:16px;text-align:left;">
+        <button class="btn-cancel" onclick="document.getElementById('activityLogModal').remove()">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  // Fetch logs
+  try {
+    const snap = await fb.getDocs(fb.query(fb.collection(fb.db, 'activity_log'), fb.orderBy('ts', 'desc')));
+    window._activityLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderActivityLog();
+  } catch(e) {
+    document.getElementById('activityLogList').innerHTML =
+      '<div style="text-align:center;padding:30px;color:#dc2626;font-size:13px;">⚠️ تعذّر التحميل — تأكد من Firestore rules</div>';
+  }
+}
+
+function renderActivityLog() {
+  const logs = window._activityLogs || [];
+  const roleFilter   = document.getElementById('alFilterRole')?.value   || '';
+  const actionFilter = document.getElementById('alFilterAction')?.value || '';
+
+  let filtered = logs;
+  if (roleFilter)   filtered = filtered.filter(l => l.actorRole === roleFilter);
+  if (actionFilter) filtered = filtered.filter(l => l.action?.startsWith(actionFilter));
+
+  const container = document.getElementById('activityLogList');
+  if (!container) return;
+
+  if (!filtered.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">لا توجد نتائج</div>';
+    return;
+  }
+
+  const roleIcon  = { admin:'🔐', engineer:'👷', client:'👤', unknown:'❓' };
+  const actionMap = {
+    login:        { label:'دخول', color:'#059669',  bg:'rgba(5,150,105,0.08)',  icon:'🔑' },
+    auto_login:   { label:'دخول تلقائي', color:'#2563eb', bg:'rgba(37,99,235,0.07)', icon:'⚡' },
+    logout:       { label:'خروج', color:'#9a8e78',  bg:'rgba(154,142,120,0.08)', icon:'🚪' },
+    report_client:{ label:'تقرير العميل', color:'#d97706', bg:'rgba(217,119,6,0.08)',  icon:'📋' },
+    report_office:{ label:'General Report', color:'#d97706', bg:'rgba(217,119,6,0.08)', icon:'📊' },
+    report_hasrat:{ label:'حصر مساحات', color:'#d97706', bg:'rgba(217,119,6,0.08)',  icon:'📐' },
+    report_weekly:{ label:'التقرير الأسبوعي', color:'#d97706', bg:'rgba(217,119,6,0.08)', icon:'📅' },
+    report_spaces:{ label:'تقرير المساحات', color:'#d97706', bg:'rgba(217,119,6,0.08)', icon:'📦' },
+    report_whatsapp:{ label:'إرسال واتساب', color:'#059669', bg:'rgba(5,150,105,0.08)', icon:'💬' },
+  };
+
+  container.innerHTML = filtered.map(log => {
+    const d = new Date(log.timestamp || log.ts);
+    const dateStr = isNaN(d) ? '—' : d.toLocaleDateString('ar-EG', { day:'numeric', month:'long', year:'numeric' });
+    const timeStr = isNaN(d) ? '' : d.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+    const am = actionMap[log.action] || { label: log.action || '—', color:'var(--text2)', bg:'var(--cream2)', icon:'•' };
+    const projBadge = log.projectName
+      ? `<span style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:2px 10px;font-size:11px;font-weight:700;color:var(--gold);">📁 ${log.projectName}</span>`
+      : '';
+    const deviceBadge = `<span style="background:var(--cream2);border:1px solid var(--cream3);border-radius:12px;padding:2px 8px;font-size:11px;color:var(--text3);">${log.device === 'Mobile' ? '📱' : '🖥️'} ${log.device || '—'}</span>`;
+    return `<div style="background:#fff;border:1px solid var(--cream3);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;">
+      <div style="font-size:22px;flex-shrink:0;">${roleIcon[log.actorRole] || '❓'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+          <span style="font-size:14px;font-weight:700;color:var(--text);">${log.actorName || '—'}</span>
+          <span style="background:var(--cream2);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;color:var(--text3);">${log.actorRole || '—'}</span>
+          <span style="background:${am.bg};border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;color:${am.color};">${am.icon} ${am.label}</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          ${projBadge}
+          ${deviceBadge}
+        </div>
+      </div>
+      <div style="text-align:left;flex-shrink:0;">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);">${timeStr}</div>
+        <div style="font-size:11px;color:var(--text3);">${dateStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function clearActivityLog() {
+  if (!confirm('هل أنت متأكد؟ سيُحذف كل السجل نهائياً!')) return;
+  try {
+    const snap = await fb.getDocs(fb.collection(fb.db, 'activity_log'));
+    const batch = [];
+    snap.docs.forEach(d => batch.push(fb.deleteDoc(fb.doc(fb.db, 'activity_log', d.id))));
+    await Promise.all(batch);
+    window._activityLogs = [];
+    renderActivityLog();
+    toast('✓ تم مسح السجل', 'success');
+  } catch(e) {
+    toast('خطأ أثناء الحذف', 'error');
+  }
 }
 
 </script>
