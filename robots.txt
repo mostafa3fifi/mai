@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mostafa3fifi.github.io/mai/sitemap.xml
