@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الصفحة غير موجودة | مصطفى عفيفي للتشطيبات والديكور</title>
+<meta name="description" content="عفواً، الصفحة التي تبحث عنها غير موجودة. عُد إلى الصفحة الرئيسية لمصطفى عفيفي للتشطيبات والديكور.">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://mostafa3fifi.github.io/mai/">
+<meta property="og:title" content="صفحة غير موجودة | مصطفى عفيفي">
+<meta property="og:url" content="https://mostafa3fifi.github.io/mai/404.html">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c9a84c;--gold-lt:#e8cc7a;--dark:#0e0c09;--cream:#faf8f3;--text:#1a1710;--text3:#9a8e78;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Cairo',sans-serif;background:var(--dark);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;overflow:hidden;}
+.bg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.12) 0%,transparent 70%);pointer-events:none;}
+.grid{position:fixed;inset:0;background-image:linear-gradient(rgba(201,168,76,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.05) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+.container{position:relative;z-index:1;max-width:560px;}
+.code{font-size:clamp(80px,20vw,160px);font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold-lt),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-4px;margin-bottom:8px;}
+.title{font-size:clamp(22px,5vw,32px);font-weight:700;margin-bottom:12px;color:#fff;}
+.sub{font-size:15px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:36px;}
+.links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn{padding:13px 28px;border-radius:40px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;text-decoration:none;transition:all .25s;cursor:pointer;border:none;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),#8a6420);color:#fff;box-shadow:0 4px 20px rgba(201,168,76,0.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,168,76,0.4);}
+.btn-ghost{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-lt);}
+.divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:24px auto;}
+.sitemap{margin-top:32px;}
+.sitemap-title{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:14px;}
+.sitemap-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.sitemap-links a{font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;padding:6px 14px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;transition:all .2s;}
+.sitemap-links a:hover{color:var(--gold-lt);border-color:rgba(201,168,76,0.3);}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="grid"></div>
+<div class="container">
+  <div class="code">404</div>
+  <h1 class="title">الصفحة غير موجودة</h1>
+  <p class="sub">عفواً، يبدو أن الصفحة التي تبحث عنها لم تعد موجودة أو تم نقلها.<br>لا تقلق — الرئيسية في انتظارك!</p>
+  <div class="links">
+    <a href="https://mostafa3fifi.github.io/mai/" class="btn btn-primary">← العودة للرئيسية</a>
+    <a href="https://mostafa3fifi.github.io/mai/#contact" class="btn btn-ghost">تواصل معنا</a>
+  </div>
+  <div class="divider"></div>
+  <div class="sitemap">
+    <div class="sitemap-title">أقسام الموقع</div>
+    <div class="sitemap-links">
+      <a href="https://mostafa3fifi.github.io/mai/#services" title="خدمات التشطيب والديكور">خدماتنا</a>
+      <a href="https://mostafa3fifi.github.io/mai/#gallery" title="معرض مشاريعنا">أعمالنا</a>
+      <a href="https://mostafa3fifi.github.io/mai/#whyus" title="لماذا مصطفى عفيفي">لماذا نحن</a>
+      <a href="https://mostafa3fifi.github.io/mai/#process" title="خطوات العمل">كيف نعمل</a>
+      <a href="https://mostafa3fifi.github.io/mai/#contact" title="اتصل بنا">تواصل</a>
+    </div>
+  </div>
+</div>
+<script>
+  // Auto redirect after 10 seconds
+  let countdown = 10;
+  const sub = document.querySelector('.sub');
+  const timer = setInterval(() => {
+    countdown--;
+    if(countdown <= 0){ clearInterval(timer); window.location.href = 'https://mostafa3fifi.github.io/mai/'; }
+  }, 1000);
+</script>
+</body>
+</html>

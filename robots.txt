@@ -1,4 +1,11 @@
+# robots.txt — مصطفى عفيفي للتشطيبات والديكور
+# https://mostafa3fifi.github.io/mai/
+
 User-agent: *
 Allow: /
 
+# منع الزحف على صفحات غير ضرورية
+Disallow: /mai/404.html
+
+# Sitemap
 Sitemap: https://mostafa3fifi.github.io/mai/sitemap.xml
