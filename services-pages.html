@@ -37,7 +37,7 @@
     /* ═══════════════════════════════════════ */
     header {
       background: var(--dark);
-      padding: 20px 0;
+      padding: 22px 0;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -61,8 +61,15 @@
     }
     .logo img {
       display: block;
-      height: 96px;
+      height: 128px;
       width: auto;
+      transition: height .3s;
+    }
+    @media (max-width: 768px) {
+      .logo img { height: 84px; }
+    }
+    @media (max-width: 480px) {
+      .logo img { height: 68px; }
     }
 
     .back-btn {
@@ -271,30 +278,44 @@
     }
 
     .service-card {
-      background: var(--white);
-      padding: 25px;
-      border-radius: 10px;
+      --card-img: none;
+      background-color: var(--white);
+      background-image: linear-gradient(175deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.9) 55%, rgba(255,255,255,.97) 100%), var(--card-img);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 28px 20px;
+      border-radius: 12px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.35s ease;
       border: 2px solid transparent;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
     }
 
     .service-card:hover {
       border-color: var(--gold);
-      box-shadow: 0 8px 20px rgba(201, 168, 76, 0.2);
-      transform: translateY(-5px);
+      box-shadow: 0 10px 26px rgba(201, 168, 76, 0.22);
+      transform: translateY(-6px);
+      background-image: linear-gradient(175deg, rgba(255,255,255,.82) 0%, rgba(255,255,255,.74) 55%, rgba(255,255,255,.9) 100%), var(--card-img);
     }
 
     .service-card.active {
       border-color: var(--gold);
-      background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), var(--white));
+      background-image: linear-gradient(175deg, rgba(201,168,76,.14) 0%, rgba(255,255,255,.9) 60%), var(--card-img);
     }
 
     .service-card-emoji {
-      font-size: 32px;
+      font-size: 34px;
       margin-bottom: 10px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      transition: transform .35s;
+    }
+
+    .service-card:hover .service-card-emoji {
+      transform: scale(1.12) rotate(-3deg);
     }
 
     .service-card-text {
@@ -405,7 +426,7 @@
 
 <header>
   <div class="header-container">
-    <a class="logo" onclick="goHome()"><img src="https://res.cloudinary.com/dsqakws4y/image/upload/v1788842224/white_no_bg.png" alt="شعار مصطفى عفيفي للتشطيبات والديكور" style="height:96px;width:auto;filter:brightness(0) invert(1);opacity:0.9;"></a>
+    <a class="logo" onclick="goHome()"><img src="https://res.cloudinary.com/dsqakws4y/image/upload/v1788842224/white_no_bg.png" alt="شعار مصطفى عفيفي للتشطيبات والديكور" style="width:auto;filter:brightness(0) invert(1);opacity:0.95;"></a>
     <button class="back-btn" onclick="goHome()">← العودة للرئيسية</button>
   </div>
 </header>
@@ -551,7 +572,7 @@
   function renderNavigation(activeId) {
     const nav = document.getElementById('nav-services');
     nav.innerHTML = services.map(service => `
-      <div class="service-card ${service.id === activeId ? 'active' : ''}" onclick="renderServicePage('${service.id}')">
+      <div class="service-card ${service.id === activeId ? 'active' : ''}" style="--card-img:url('${service.image}')" onclick="renderServicePage('${service.id}')">
         <div class="service-card-emoji">${service.emoji}</div>
         <div class="service-card-text ${service.id === activeId ? 'active' : ''}">${service.name}</div>
       </div>
