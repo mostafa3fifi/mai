@@ -3627,6 +3627,7 @@ function renderProjectUI(role) {
     {key:'finish',        label:'🪟 التشطيبات',           roles:['admin','engineer','client'], clientPerm:'finish'},
     {key:'furn',          label:'🛋️ الفرش',              roles:['admin','engineer','client'], clientPerm:'furn'},
     {key:'gallery',       label:'📷 الصور',              roles:['admin','engineer','client'], clientPerm:'gallery'},
+    {key:'setup',         label:'🧾 اختيارات التأسيس',   roles:['admin','engineer','client'], clientPerm:'setup'},
     // ── تنفيذ ──
     {key:'spaces',        label:'📐 مسطحات وفتحات',      roles:['admin','engineer']},
     {key:'hasrat',        label:'🧮 الحصر',              roles:['admin','engineer']},
@@ -3680,6 +3681,7 @@ function switchTab(tab) {
   else if(tab === 'accounts') renderAccountsTab(body);
   else if(tab === 'clientaccounts') renderClientAccountsTab(body);
   else if(tab === 'invoices') renderInvoicesTab(body);
+  else if(tab === 'setup') renderSetupChoicesTab(body);
 }
 
 // ── ACCOUNTS TAB ──
@@ -8727,6 +8729,121 @@ async function saveCurrentProject() {
   }, 600);
 }
 
+
+// ══════════════════════════════════════
+// PROJECT SETUP CHOICES (اختيارات التأسيس) — embedded form
+// ══════════════════════════════════════
+let setupIframeWin = null;
+
+function renderSetupChoicesTab(body) {
+  const p = currentProjectData;
+  if(!p.setup) p.setup = {a:{}, tab:null, editOpen:false, editRequested:false};
+  const isAdmin = currentRole === 'admin';
+  const editOpen = !!p.setup.editOpen;
+  const requested = !!p.setup.editRequested;
+
+  let banner = '';
+  if(currentRole === 'client') {
+    if(editOpen) {
+      banner = `<div class="d-card" style="background:rgba(5,150,105,0.06);border-color:rgba(5,150,105,0.25);display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <span style="font-size:13px;font-weight:700;color:#059669;">✓ التعديل مفتوح لك الآن — يمكنك تغيير اختياراتك</span>
+      </div>`;
+    } else if(requested) {
+      banner = `<div class="d-card" style="background:rgba(201,168,76,0.06);border-color:rgba(201,168,76,0.25);">
+        <span style="font-size:13px;font-weight:700;color:var(--gold-dk);">⏳ تم إرسال طلبك، بانتظار موافقة الإدارة على فتح التعديل</span>
+      </div>`;
+    } else {
+      banner = `<div class="d-card" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--text3);">الاختيارات مقفولة للعرض فقط حاليًا. لو عايز تعدّل، اطلب فتح التعديل من الإدارة.</span>
+        <button class="btn-sm btn-sm-gold" onclick="requestSetupEdit()">🔓 طلب فتح التعديل</button>
+      </div>`;
+    }
+  } else if(isAdmin) {
+    if(requested) {
+      banner = `<div class="d-card" style="background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:13px;font-weight:700;color:var(--gold-dk);">⏳ العميل طلب فتح التعديل على اختيارات التأسيس</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-sm btn-sm-gold" onclick="setSetupEditOpen(true)">✓ موافقة وفتح التعديل</button>
+          <button class="btn-sm btn-sm-outline" onclick="rejectSetupEdit()">رفض</button>
+        </div>
+      </div>`;
+    } else {
+      banner = `<div class="d-card" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--text3);">${editOpen ? 'التعديل مفتوح للعميل حاليًا.' : 'التعديل مقفول على العميل حاليًا (عرض فقط).'}</span>
+        <button class="btn-sm ${editOpen?'btn-sm-outline':'btn-sm-gold'}" onclick="setSetupEditOpen(${editOpen?'false':'true'})">${editOpen ? '🔒 قفل التعديل' : '🔓 فتح التعديل للعميل'}</button>
+      </div>`;
+    }
+  }
+
+  body.innerHTML = `
+    ${banner}
+    <div class="d-card" style="padding:0;overflow:hidden;">
+      <iframe id="setupFrame" src="project-setup-choices.html" style="width:100%;min-height:80vh;border:0;display:block;"></iframe>
+    </div>
+  `;
+
+  const frame = document.getElementById('setupFrame');
+  setupIframeWin = frame.contentWindow;
+
+  window.addEventListener('message', handleSetupMessage);
+}
+
+function handleSetupMessage(e) {
+  if(!setupIframeWin || e.source !== setupIframeWin) return;
+  const p = currentProjectData; if(!p) return;
+  const m = e.data; if(!m || typeof m !== 'object') return;
+
+  if(m.type === 'afifi-ready') {
+    const canEdit = currentRole === 'admin' || (currentRole === 'client' && !!p.setup?.editOpen);
+    setupIframeWin.postMessage({
+      type: 'afifi-init',
+      meta: {
+        name: p.meta?.clientName || '',
+        unit: p.meta?.unit || p.meta?.name || '',
+        phone: p.meta?.clientPhone || p.meta?.clientWhatsapp || ''
+      },
+      a: p.setup?.a || {},
+      tab: p.setup?.tab || null,
+      readonly: !canEdit
+    }, '*');
+  } else if(m.type === 'afifi-change') {
+    if(!p.setup) p.setup = {};
+    p.setup.a = m.a || {};
+    p.setup.updatedAt = Date.now();
+    saveCurrentProject();
+  } else if(m.type === 'afifi-tab') {
+    if(!p.setup) p.setup = {};
+    p.setup.tab = m.tab;
+    saveCurrentProject();
+  }
+}
+
+async function requestSetupEdit() {
+  const p = currentProjectData; if(!p) return;
+  if(!p.setup) p.setup = {a:{}};
+  p.setup.editRequested = true;
+  await saveCurrentProject();
+  toast('✓ تم إرسال طلبك للإدارة', 'success');
+  switchTab('setup');
+}
+
+async function rejectSetupEdit() {
+  const p = currentProjectData; if(!p) return;
+  p.setup.editRequested = false;
+  await saveCurrentProject();
+  switchTab('setup');
+}
+
+async function setSetupEditOpen(open) {
+  const p = currentProjectData; if(!p) return;
+  if(!p.setup) p.setup = {a:{}};
+  p.setup.editOpen = open;
+  p.setup.editRequested = false;
+  await saveCurrentProject();
+  toast(open ? '✓ التعديل مفتوح للعميل' : '✓ تم قفل التعديل', 'success');
+  switchTab('setup');
+}
+
 // ══════════════════════════════════════
 // REPORT — CLIENT REPORT
 // ══════════════════════════════════════
@@ -9535,7 +9652,7 @@ function getEngineerTabOptions(){
     {v:'overview',l:'🏠 نظرة عامة'}, {v:'finish',l:'🪟 التشطيبات'}, {v:'furn',l:'🛋️ الفرش'},
     {v:'accounts',l:'📊 حسابات'}, {v:'clientaccounts',l:'💳 حساباتي'}, {v:'spaces',l:'📐 مسطحات'},
     {v:'hasrat',l:'🧮 الحصر'}, {v:'gallery',l:'📷 الصور'}, {v:'payments',l:'💰 Client Payments'},
-    {v:'crew',l:'👷‍♂️ طاقم العمل'}, {v:'info',l:'📋 بيانات'}, {v:'engineers',l:'👷 المهندسون'}
+    {v:'crew',l:'👷‍♂️ طاقم العمل'}, {v:'info',l:'📋 بيانات'}, {v:'engineers',l:'👷 المهندسون'}, {v:'setup',l:'🧾 اختيارات التأسيس'}
   ];
 }
 
@@ -10475,6 +10592,7 @@ function openClientPermissionsModal() {
           {k:'finish', l:'🪟 التشطيبات'},
           {k:'furn',   l:'🛋️ الفرش'},
           {k:'gallery',l:'📷 الصور'},
+          {k:'setup',   l:'🧾 اختيارات التأسيس'},
           {k:'payments',l:'💳 سجل دفعاتي'},
           {k:'balance', l:'💰 بطاقة الرصيد'},
           {k:'engineer',l:'🏗️ Responsible Engineer Info'},
@@ -10493,7 +10611,7 @@ function openClientPermissionsModal() {
 }
 
 async function saveClientPermissions() {
-  const keys = ['finish','furn','gallery','payments','balance','engineer'];
+  const keys = ['finish','furn','gallery','payments','balance','engineer','setup'];
   const perms = {};
   keys.forEach(k => { perms[k] = document.getElementById('perm-'+k)?.checked !== false && document.getElementById('perm-'+k)?.checked; });
   if(!currentProjectData.meta) currentProjectData.meta = {};
