@@ -1267,66 +1267,67 @@ footer{background:var(--dark2);padding:40px;text-align:center;border-top:1px sol
   #navbar,.wa-fab,.proj-topbar,.dash-tabs,button:not(.print-btn){display:none!important;}
 }
 
-/* Back button floating — gold premium */
+/* Back button floating — Transparent Arrow Only */
 .back-btn-float {
-  position:fixed;
-  top:96px;
-  z-index:800;
-  background:linear-gradient(135deg,var(--gold),var(--gold-dk));
-  border:none;
-  border-radius:50px;
-  min-width:auto;
-  height:40px;
-  padding:0 18px 0 12px;
-  display:flex;align-items:center;gap:8px;
-  font-size:12px;cursor:pointer;letter-spacing:1.5px;
-  box-shadow:0 4px 20px rgba(201,168,76,0.35), 0 1px 4px rgba(14,12,9,0.10);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  transition:all .25s cubic-bezier(.16,1,.3,1);
-  color:#fff;
-  font-family:'Cairo',sans-serif;
-  font-weight:700;
-  text-transform:uppercase;
-}
-.back-btn-float::before {
-  content:'';
-  display:inline-block;
-  width:20px; height:20px;
-  background:rgba(255,255,255,0.2);
-  border:1px solid rgba(255,255,255,0.35);
-  border-radius:50%;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E");
-  background-size:12px 12px;
-  background-repeat:no-repeat;
-  background-position:center;
-  flex-shrink:0;
-  transition:all .25s;
-}
-.back-btn-float:hover {
-  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
-  color:var(--dark);
-  box-shadow:0 8px 32px rgba(201,168,76,0.45), 0 2px 8px rgba(14,12,9,0.12);
-  transform:translateY(-2px);
-}
-.back-btn-float:hover::before {
-  background-color:rgba(14,12,9,0.12);
-  border-color:rgba(14,12,9,0.2);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230e0c09' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E");
-  background-size:12px 12px;
-  background-repeat:no-repeat;
-  background-position:center;
-}
-.back-btn-float:active { transform:translateY(0) scale(0.97); }
-.back-btn-float.right-side{right:20px;}
-.back-btn-float.left-side{left:20px;}
-@media(max-width:600px){
-  .back-btn-float{top:82px;height:36px;font-size:11px;padding:0 14px 0 10px;gap:6px;letter-spacing:1px;}
-  .back-btn-float::before{width:17px;height:17px;background-size:10px 10px;}
-  .back-btn-float.right-side{right:12px;}
-  .back-btn-float.left-side{left:12px;}
+  position: fixed;
+  top: 96px;
+  z-index: 800;
+  background: transparent; /* إلغاء الخلفية الذهبية */
+  border: none;
+  width: 40px; /* توحيد المقاس ليكون مربع/دائرة متناسقة */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: none; /* إلغاء الظل */
+  backdrop-filter: none; /* إلغاء تأثير الزجاج */
+  -webkit-backdrop-filter: none;
+  transition: all .25s cubic-bezier(.16,1,.3,1);
+  
+  /* خدعة لإخفاء أي كلام (زي كلمة Back) لو لسه موجودة في الـ HTML */
+  font-size: 0; 
+  color: transparent; 
 }
 
+/* شكل السهم الأساسي */
+.back-btn-float::before {
+  content: '';
+  display: inline-block;
+  width: 24px; 
+  height: 24px;
+  /* سهم بلون داكن يتناسب مع الخلفية الفاتحة -- استخدمنا الكود اللوني #1a1710 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1710' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
+  transition: all .25s;
+}
+
+/* تأثير الوقوف بالماوس (Hover) */
+.back-btn-float:hover {
+  background: transparent;
+  transform: translateX(5px); /* السهم يتحرك يمين حركة خفيفة */
+}
+
+/* تحويل لون السهم للذهبي عند الـ Hover */
+.back-btn-float:hover::before {
+  /* الكود اللوني الذهبي بتاعك #c9a84c */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a84c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.back-btn-float:active { transform: translateX(5px) scale(0.9); }
+.back-btn-float.right-side { right: 20px; }
+.back-btn-float.left-side { left: 20px; }
+
+/* تظبيط مقاس الموبايل */
+@media(max-width: 600px){
+  .back-btn-float { top: 82px; width: 36px; height: 36px; }
+  .back-btn-float::before { width: 20px; height: 20px; }
+  .back-btn-float.right-side { right: 12px; }
+  .back-btn-float.left-side { left: 12px; }
+}
 
 /* ══════════════════════════════════════
    SERVICE CONTACT PAGE
